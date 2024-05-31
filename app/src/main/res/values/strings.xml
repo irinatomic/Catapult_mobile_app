@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Catapult</string>
+
+    <!-- Navigation -->
+    <string name="back">Back</string>
+
+    <!-- Search mode -->
+    <string name="search">Search</string>
+    <string name="clear">Clear</string>
+    <string name="number_of_results">Number of search results</string>
+
+    <!-- Error messages -->
+    <string name="no_data">No breeds</string>
+    <string name="error_fetching_data">Failed to load</string>
+    <string name="no_browser_found">No browser found on device</string>
+
+    <!-- Breed details -->
+    <string name="breed_details">Breed details</string>
+    <string name="breed_name">Name</string>
+    <string name="breed_temperament">Temperament</string>
+    <string name="breed_alt_names">Alternative names</string>
+    <string name="breed_origin">Origin</string>
+    <string name="breed_life_span">Life span</string>
+    <string name="breed_rare_breed">Rare breed</string>
+    <string name="breed_adaptability">Adaptability</string>
+    <string name="breed_affection_level">Affection level</string>
+    <string name="breed_child_friendly">Child friendly</string>
+    <string name="breed_intelligence">Intelligence</string>
+    <string name="breed_shedding_level">Shedding Level</string>
+    <string name="breed_weight">Weight</string>
+
+    <!-- Weight -->
+    <string name="weight_imperial">lbs</string>
+    <string name="weight_metric">kg</string>
+
+    <!-- Wikipedia -->
+    <string name="wikipedia">Go to Wikipedia</string>
+
+</resources>
