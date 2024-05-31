@@ -103,8 +103,6 @@ fun BreedsPreviewCard(
                     fontSize = 16.sp,
                     maxLines = 1
                 )
-
-
                 Spacer(modifier = Modifier.height(4.dp)) // Increased vertical space between elements
 
                 Text(
@@ -112,12 +110,11 @@ fun BreedsPreviewCard(
                     fontSize = 14.sp,
                     maxLines = 1
                 )
-
                 Spacer(modifier = Modifier.height(4.dp)) // Increased vertical space between elements
 
                 Text(
                     text = "Description: ${
-                        if (breed.description.length > 100) breed.description.take(100) + "..."
+                        if (breed.description.length > 80) breed.description.take(80) + "..."
                         else breed.description
                     }",
                     fontSize = 14.sp,

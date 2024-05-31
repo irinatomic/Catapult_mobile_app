@@ -21,4 +21,8 @@ interface ImageDao {
 
     @Query("SELECT * FROM ImageDbModel WHERE breedId = :breedId")
     fun observeAllForBreed(breedId: String): Flow<List<ImageDbModel>>
+
+    // In ImageDao.kt
+    @Query("SELECT COUNT(*) FROM ImageDbModel WHERE breedId = :breedId")
+    suspend fun countImagesForBreed(breedId: String): Int
 }

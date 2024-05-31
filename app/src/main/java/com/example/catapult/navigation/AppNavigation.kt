@@ -3,6 +3,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.catapult.breeds.images_screen.breedImagesScreen
 
 @Composable
 fun AppNavigation() {
@@ -17,6 +18,16 @@ fun AppNavigation() {
 
         breedDetailsScreen(
             route = "breed/details/{breedId}",
+            arguments = listOf(
+                navArgument("breedId") {
+                    type = NavType.StringType
+                },
+            ),
+            navController = navController,
+        )
+
+        breedImagesScreen(
+            route = "breed/images/{breedId}",
             arguments = listOf(
                 navArgument("breedId") {
                     type = NavType.StringType

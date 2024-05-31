@@ -3,7 +3,7 @@ package com.example.catapult.breeds.list_screen
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapult.breeds.repository.BreedInfoRepository
+import com.example.catapult.breeds.repository.BreedRepository
 import com.example.catapult.data.mapper.asBreedUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -16,7 +16,7 @@ import kotlinx.coroutines.withContext
 import java.io.IOException
 
 class BreedsListViewModel(
-    private val repository: BreedInfoRepository = BreedInfoRepository
+    private val repository: BreedRepository = BreedRepository
 ): ViewModel() {
 
      private val _state = MutableStateFlow(BreedsListState())
@@ -73,7 +73,6 @@ class BreedsListViewModel(
             repository.observeBreeds()
                 .distinctUntilChanged()
                 .collect {
-                    Log.i(" IRINA", "Breeds table updated.")
                     setState {
                         copy(
                             initialLoading = false,
@@ -102,6 +101,7 @@ class BreedsListViewModel(
                 setState { copy(fetching = false) }
             }
         }
+        Log.i(" IRINA", "Breeds table updated.")
     }
 
 }

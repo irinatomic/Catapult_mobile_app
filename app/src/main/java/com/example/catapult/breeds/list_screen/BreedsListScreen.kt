@@ -175,7 +175,6 @@ private fun BreedsList (
                 breed = item,
                 onClick = { onItemClick(item) },
             )
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }

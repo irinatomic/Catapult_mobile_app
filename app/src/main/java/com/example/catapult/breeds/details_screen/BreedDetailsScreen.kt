@@ -59,7 +59,10 @@ fun NavGraphBuilder.breedDetailsScreen(
 
     BreedDetailsScreen(
         state = state.value,
-        onBack = { navController.popBackStack() }
+        onBack = { navController.popBackStack() },
+        onMoreImagesClick = {
+            navController.navigate("breed/images/$breedId")
+        }
     )
 }
 
@@ -68,6 +71,7 @@ fun NavGraphBuilder.breedDetailsScreen(
 fun BreedDetailsScreen (
     state: BreedDetailsState,
     onBack: () -> Unit,
+    onMoreImagesClick: () -> Unit,
 ) {
     Scaffold(
         topBar = {
@@ -85,6 +89,7 @@ fun BreedDetailsScreen (
             BreedDetails(
                 state = state,
                 paddingValues = it,
+                onMoreImagesClick = onMoreImagesClick
             )
 
             Log.d("IRINA", "BreedDetailsScreen: ${state.breedId}")
@@ -106,6 +111,7 @@ fun BreedDetailsScreen (
 private fun BreedDetails(
     state: BreedDetailsState,
     paddingValues: PaddingValues,
+    onMoreImagesClick: () -> Unit,
 ) {
 
     val scrollState = rememberScrollState()
@@ -121,11 +127,21 @@ private fun BreedDetails(
         state.breedUi?.let { info ->
             BreedImage(imageUrl = info.imageUrl)
 
-            Text(
-                text = "${stringResource(id = R.string.breed_name)}: ${info.name}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(8.dp)
-            )
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${stringResource(id = R.string.breed_name)}: ${info.name}",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(8.dp).weight(1f)
+                )
+
+                Button(
+                    onClick = onMoreImagesClick,
+                    modifier = Modifier.padding(8.dp)
+                ) { Text(text = "More images") }
+            }
 
             Text(
                 text = info.description,
@@ -179,19 +195,14 @@ private fun BreedImage(
     imageUrl: String
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .aspectRatio(1f)
-            .padding(16.dp),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         SubcomposeAsyncImage(
             modifier = Modifier.fillMaxSize(),
             model = imageUrl,
             contentDescription = null,
-            loading = {
-                CircularProgressIndicator()
-            }
+            loading = { CircularProgressIndicator() }
         )
     }
 }
@@ -284,6 +295,7 @@ fun BreedDetailsScreenPreview() {
             breedUi = SampleData[0],
             error = null
         ),
-        onBack = { /* does nothing */ }
+        onBack = { /* does nothing */ },
+        onMoreImagesClick = { /* does nothing */ }
     )
 }

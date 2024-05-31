@@ -11,7 +11,10 @@ data class Weight(
 
 @Serializable
 data class Image(
-    @SerialName("url") val imageUrl: String
+    val id: String,
+    @SerialName("url") val imageUrl: String,
+    val width: Int,
+    val height: Int
 )
 
 @Serializable

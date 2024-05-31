@@ -108,4 +108,5 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.1.0")
     implementation("androidx.compose.material:material:1.1.0")
     implementation("androidx.compose.ui:ui-tooling:1.1.0")
+    implementation("androidx.compose.foundation:foundation:1.3.0")
 }
