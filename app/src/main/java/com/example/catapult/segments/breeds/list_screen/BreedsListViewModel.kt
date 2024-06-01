@@ -1,9 +1,9 @@
-package com.example.catapult.breeds.list_screen
+package com.example.catapult.segments.breeds.list_screen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapult.breeds.repository.BreedRepository
+import com.example.catapult.segments.breeds.BreedRepository
 import com.example.catapult.data.mapper.asBreedUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow

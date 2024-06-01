@@ -1,4 +1,4 @@
-package com.example.catapult.breeds.details_screen
+package com.example.catapult.segments.breeds.details_screen
 
 import com.example.catapult.data.ui.BreedUiModel
 

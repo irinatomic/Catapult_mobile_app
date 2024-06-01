@@ -22,28 +22,30 @@ import androidx.navigation.compose.composable
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import com.example.catapult.R
 import com.example.catapult.data.ui.BreedUiModel
-import com.example.catapult.breeds.list_screen.BreedsListState
-import com.example.catapult.breeds.list_screen.BreedsListViewModel
-import com.example.catapult.breeds.list_screen.BreedsListUIEvent
-import com.example.catapult.breeds.repository.SampleData
+import com.example.catapult.navigation_drawer.HamburgerMenu
+import com.example.catapult.segments.breeds.list_screen.BreedsListState
+import com.example.catapult.segments.breeds.list_screen.BreedsListViewModel
+import com.example.catapult.segments.breeds.list_screen.BreedsListUIEvent
 
 fun NavGraphBuilder.breedsListScreen(
     route: String,
     navController: NavController,
+    drawerState: DrawerState,
 ) = composable(route = route) {
     val breedsListViewModel = viewModel<BreedsListViewModel>()
     val state by breedsListViewModel.state.collectAsState()
 
     BreedsListScreen(
         state = state,
+        drawerState = drawerState,
         eventPublisher = { breedsListViewModel.setEvent(it) },
         onItemClick = { breed ->
             navController.navigate("breed/details/${breed.id}")
@@ -55,6 +57,7 @@ fun NavGraphBuilder.breedsListScreen(
 @Composable
 fun BreedsListScreen(
     state: BreedsListState,
+    drawerState: DrawerState,
     eventPublisher: (BreedsListUIEvent) -> Unit,
     onItemClick: (BreedUiModel) -> Unit,
 ) {
@@ -62,9 +65,10 @@ fun BreedsListScreen(
 
         // TOP BAR
         topBar = {
-            if(!state.searchActive) {
+            if (!state.searchActive) {
                 TopAppBar(
                     title = { Text(stringResource(id = R.string.app_name)) },
+                    navigationIcon = { HamburgerMenu(drawerState) },
                     actions = {
                         IconButton(onClick = { eventPublisher(BreedsListUIEvent.StartSearch) }) {
                             Icon(Icons.Filled.Search, contentDescription = stringResource(id = R.string.search))
@@ -177,16 +181,4 @@ private fun BreedsList (
             )
         }
     }
-}
-
-@Preview
-@Composable
-fun BreedsListScreenPreview() {
-    val breedsListViewModel = viewModel<BreedsListViewModel>()
-
-    BreedsListScreen(
-        state = BreedsListState(breeds = SampleData),
-        eventPublisher = { breedsListViewModel.setEvent(it) },
-        onItemClick = { /* does nothing */ }
-    )
 }

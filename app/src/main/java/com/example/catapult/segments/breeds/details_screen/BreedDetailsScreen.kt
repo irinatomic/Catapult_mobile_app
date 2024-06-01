@@ -28,13 +28,12 @@ import androidx.navigation.compose.composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NamedNavArgument
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.R
-import com.example.catapult.breeds.repository.SampleData
-import com.example.catapult.breeds.details_screen.*
+import com.example.catapult.segments.breeds.details_screen.BreedDetailsState
+import com.example.catapult.segments.breeds.details_screen.BreedDetailsViewModel
 
 fun NavGraphBuilder.breedDetailsScreen(
     route: String,
@@ -283,19 +282,4 @@ private fun WikipediaButton(
         },
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
     ) { Text(stringResource(id = R.string.wikipedia)) }
-}
-
-
-@Preview
-@Composable
-fun BreedDetailsScreenPreview() {
-    BreedDetailsScreen(
-        state = BreedDetailsState(
-            breedId = SampleData[0].id,
-            breedUi = SampleData[0],
-            error = null
-        ),
-        onBack = { /* does nothing */ },
-        onMoreImagesClick = { /* does nothing */ }
-    )
 }

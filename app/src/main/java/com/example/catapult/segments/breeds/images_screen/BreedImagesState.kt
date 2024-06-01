@@ -1,6 +1,6 @@
-package com.example.catapult.breeds.images_screen
+package com.example.catapult.segments.breeds.images_screen
 
-import com.example.catapult.breeds.list_screen.BreedsListState
+import com.example.catapult.segments.breeds.list_screen.BreedsListState
 import com.example.catapult.data.ui.ImageUiModel
 
 data class BreedImagesState (

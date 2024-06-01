@@ -1,12 +1,10 @@
-package com.example.catapult.breeds.images_screen
+package com.example.catapult.segments.breeds.images_screen
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -36,7 +34,6 @@ import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.R
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
 import com.example.catapult.data.ui.ImageUiModel
 
 fun NavGraphBuilder.breedImagesScreen(

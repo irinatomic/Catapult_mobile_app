@@ -1,10 +1,10 @@
-package com.example.catapult.breeds.images_screen
+package com.example.catapult.segments.breeds.images_screen
 
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapult.breeds.list_screen.BreedsListState
-import com.example.catapult.breeds.repository.BreedRepository
+import com.example.catapult.segments.breeds.list_screen.BreedsListState
+import com.example.catapult.segments.breeds.BreedRepository
 import com.example.catapult.data.mapper.asImageUiModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

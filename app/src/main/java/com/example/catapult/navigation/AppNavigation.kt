@@ -1,39 +1,77 @@
-import androidx.compose.runtime.Composable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.example.catapult.breeds.images_screen.breedImagesScreen
+import com.example.catapult.navigation_drawer.DrawerMenu
+import com.example.catapult.segments.breeds.images_screen.breedImagesScreen
+import kotlinx.coroutines.launch
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
 
-    NavHost(navController = navController, startDestination = "breeds") {
-        breedsListScreen(
-            route = "breeds",
-            navController = navController
-        )
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            Box(
+                Modifier
+                    .fillMaxHeight()
+                    .width(240.dp)
+                    .background(MaterialTheme.colorScheme.background)
+            ) {
+                Column {
+                    Text("Catapult",
+                        modifier = Modifier.padding(16.dp),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Divider()
+                    DrawerMenu(navController = navController) {
+                        scope.launch { drawerState.close() }
+                    }
+                }
+            }
+        }
+    ) {
 
-        breedDetailsScreen(
-            route = "breed/details/{breedId}",
-            arguments = listOf(
-                navArgument("breedId") {
-                    type = NavType.StringType
-                },
-            ),
-            navController = navController,
-        )
+        NavHost(navController = navController, startDestination = "breeds") {
+            breedsListScreen(
+                route = "breeds",
+                navController = navController,
+                drawerState = drawerState,
+            )
 
-        breedImagesScreen(
-            route = "breed/images/{breedId}",
-            arguments = listOf(
-                navArgument("breedId") {
-                    type = NavType.StringType
-                },
-            ),
-            navController = navController,
-        )
+            breedDetailsScreen(
+                route = "breed/details/{breedId}",
+                arguments = listOf(
+                    navArgument("breedId") {
+                        type = NavType.StringType
+                    },
+                ),
+                navController = navController,
+            )
+
+            breedImagesScreen(
+                route = "breed/images/{breedId}",
+                arguments = listOf(
+                    navArgument("breedId") {
+                        type = NavType.StringType
+                    },
+                ),
+                navController = navController,
+            )
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.example.catapult.breeds.repository
+package com.example.catapult.segments.breeds
 
 import com.example.catapult.networking.api.BreedsApi
 import com.example.catapult.data.database.CatapultDatabase
