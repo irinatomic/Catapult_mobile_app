@@ -14,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.catapult.navigation_drawer.DrawerMenu
 import com.example.catapult.segments.breeds.images_screen.breedImagesScreen
+import com.example.catapult.segments.quiz.question_screen.quizQuestionScreen
+import com.example.catapult.segments.quiz.start_screen.quizStartScreen
 import kotlinx.coroutines.launch
 
 @Composable
@@ -70,6 +72,17 @@ fun AppNavigation() {
                         type = NavType.StringType
                     },
                 ),
+                navController = navController,
+            )
+
+            quizStartScreen(
+                route = "quiz/start",
+                navController = navController,
+                drawerState = drawerState,
+            )
+
+            quizQuestionScreen(
+                route = "quiz",
                 navController = navController,
             )
         }

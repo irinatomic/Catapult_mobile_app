@@ -21,7 +21,7 @@ class BreedsListViewModel(
 
      private val _state = MutableStateFlow(BreedsListState())
      val state = _state.asStateFlow()
-     private fun setState(reducer: BreedsListState.() -> BreedsListState) = _state.getAndUpdate(reducer)
+    private fun setState(reducer: BreedsListState.() -> BreedsListState) = _state.getAndUpdate(reducer)
 
     private val events = MutableSharedFlow<BreedsListUIEvent>()
     fun setEvent(event: BreedsListUIEvent) {

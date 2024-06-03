@@ -19,9 +19,21 @@ interface BreedDao {
     @Query("SELECT * FROM BreedDbModel")
     suspend fun getAll(): List<BreedDbModel>
 
+    suspend fun getCountOfBreeds(): Int {
+        return getAll().size
+    }
+
     @Query("SELECT * FROM BreedDbModel")
     fun observeAll(): Flow<List<BreedDbModel>>
 
     @Query("SELECT * FROM BreedDbModel WHERE id = :breedId")
     fun observeBreedById(breedId: String): Flow<BreedDbModel?>
+
+    suspend fun getAllTemperaments(): List<String> {
+        return getAll()
+            .map { it.temperament.split(",") }
+            .flatten()
+            .map { it.trim() }
+            .distinct()
+    }
 }

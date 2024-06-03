@@ -2,6 +2,7 @@ package com.example.catapult.navigation_drawer
 
 sealed class DrawerItem(val route: String, val title: String) {
     object Discover : DrawerItem("breeds", "Discover")
+    object StartQuiz : DrawerItem("quiz/start", "Start Quiz")
 
     /*
     object Quiz : DrawerItem("quiz", "Quiz 1")
@@ -11,7 +12,8 @@ sealed class DrawerItem(val route: String, val title: String) {
 
     companion object {
         val allItems = listOf(
-            Discover
+            Discover,
+            StartQuiz
         )
     }
 }
