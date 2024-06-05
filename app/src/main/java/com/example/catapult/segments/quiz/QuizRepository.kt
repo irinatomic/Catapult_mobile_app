@@ -14,9 +14,11 @@ object QuizRepository {
     private val database by lazy { CatapultDatabase.database }
     private val breedsApi: BreedsApi = retrofit.create(BreedsApi::class.java)
 
+    private var temperaments: List<String> = listOf()
+
     suspend fun generateQuestions(): List<Question> = coroutineScope {
         val questions = mutableListOf<Deferred<Question>>()
-        repeat(20) {
+        repeat(5) {
             questions += async {
                 withContext(Dispatchers.IO) {
                     when (Random.nextInt(3)) {
@@ -40,8 +42,8 @@ object QuizRepository {
         val images = fetchImagesForBreed(breed.id)
 
         val imageUrl = images[0].url
-        val answers = database.breedDao().getAll().shuffled().take(3).map { it.name } + breed.name
-        return Question("Which breed is this?", imageUrl, answers.shuffled(), breed.name)
+        val answers = database.breedDao().getAll().shuffled().take(3).map { it.name.lowercase() } + breed.name.lowercase()
+        return Question("Which breed is this?", imageUrl, answers.shuffled(), breed.name.lowercase())
     }
 
     /**
@@ -54,8 +56,8 @@ object QuizRepository {
         val images = fetchImagesForBreed(breed.id)
 
         val imageUrl = images[0].url
-        val correctTemperament = breed.temperament.split(",").random().trim()
-        val wrongTemperaments = database.breedDao().getAllTemperaments().filter { it != correctTemperament }.shuffled().take(3)
+        val correctTemperament = breed.temperament.split(",").map{ it.lowercase() }.random().trim()
+        val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
         val answers = wrongTemperaments + correctTemperament
         return Question("Which temperament does not belong to this breed?", imageUrl, answers.shuffled(), correctTemperament)
     }
@@ -70,8 +72,8 @@ object QuizRepository {
         val images = fetchImagesForBreed(breed.id)
 
         val imageUrl = images[0].url
-        val correctTemperament = breed.temperament.split(",").random().trim()
-        val wrongTemperaments = database.breedDao().getAllTemperaments().filter { it != correctTemperament }.shuffled().take(3)
+        val correctTemperament = breed.temperament.split(",").map{ it.lowercase() }.random().trim()
+        val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
         val answers = wrongTemperaments + correctTemperament
         return Question("Which temperament belongs to this breed?", imageUrl, answers.shuffled(), correctTemperament)
     }
@@ -93,4 +95,9 @@ object QuizRepository {
         return images
     }
 
+    private suspend fun fetchTemperaments():List<String> {
+        if (temperaments.isEmpty())
+            temperaments = database.breedDao().getAllTemperaments()
+        return temperaments
+    }
 }

@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapult.segments.quiz.QuizRepository
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -36,8 +37,23 @@ class QuizQuestionViewModel(
         viewModelScope.launch {
             events.collect {
                 when(it) {
-                    is QuizQuestionUiEvent.AnswerSelected -> TODO()
-                    QuizQuestionUiEvent.NextQuestion -> TODO()
+                    is QuizQuestionUiEvent.NextQuestion -> {
+                        setState { copy(showCorrectAnswer = true)}
+                        delay(1000)
+                        setState { copy(showCorrectAnswer = false)}
+
+                        val currentQuestion = state.value.questions[state.value.currentQuestionIndex]
+                        val correctAnswer = currentQuestion.correctAnswer
+                        val selectedAnswer = it.selected
+
+                        if (correctAnswer == selectedAnswer)
+                            setState { copy(correctAnswers = correctAnswers + 1) }
+
+                        if (state.value.currentQuestionIndex < state.value.questions.size - 1)
+                            setState { copy(currentQuestionIndex = currentQuestionIndex + 1) }
+                        else
+                            Log.d("IRINA", "Quiz finished, ${state.value.correctAnswers}")
+                    }
                 }
             }
         }

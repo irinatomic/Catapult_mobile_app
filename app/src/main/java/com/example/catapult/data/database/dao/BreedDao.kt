@@ -31,9 +31,12 @@ interface BreedDao {
 
     suspend fun getAllTemperaments(): List<String> {
         return getAll()
+            .asSequence()
             .map { it.temperament.split(",") }
             .flatten()
             .map { it.trim() }
+            .map{ it.lowercase() }
             .distinct()
+            .toList()
     }
 }

@@ -9,6 +9,7 @@ data class Question(
 
 data class QuizQuestionState(
     val creatingQuestions: Boolean = true,
+    val showCorrectAnswer: Boolean = false,
 
     val questions: List<Question> = emptyList(),
     val currentQuestionIndex: Int = 0,
@@ -16,6 +17,5 @@ data class QuizQuestionState(
 )
 
 sealed class QuizQuestionUiEvent {
-    data class AnswerSelected(val answer: String) : QuizQuestionUiEvent()
-    object NextQuestion : QuizQuestionUiEvent()
+    data class NextQuestion(val selected: String) : QuizQuestionUiEvent()
 }
