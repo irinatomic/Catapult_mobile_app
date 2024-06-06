@@ -3,12 +3,8 @@ package com.example.catapult.segments.quiz.question_screen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -18,15 +14,16 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.size
-import androidx.compose.material.ContentAlpha
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.catapult.R
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 
 fun NavGraphBuilder.quizQuestionScreen(
     route: String,
@@ -39,9 +36,10 @@ fun NavGraphBuilder.quizQuestionScreen(
 QuizQuestionScreen(
         state = state,
         onBack = { navController.popBackStack() },
-        onNextQuestion = { answer ->
-            quizQuestionViewModel.setEvent(QuizQuestionUiEvent.NextQuestion(answer))
-        }
+        onNextQuestion = { answer -> quizQuestionViewModel.setEvent(QuizQuestionUiEvent.NextQuestion(answer)) },
+        publishResult = { score -> },
+        restartQuiz = { navController.navigate("quiz/start") },
+        discoverPage = { navController.navigate("breeds") }
     )
 }
 
@@ -50,16 +48,26 @@ QuizQuestionScreen(
 fun QuizQuestionScreen(
     state: QuizQuestionState,
     onBack: () -> Unit,
-    onNextQuestion: (String) -> Unit
+    onNextQuestion: (String) -> Unit,
+    publishResult: (Int) -> Unit,
+    restartQuiz: () -> Unit,
+    discoverPage: () -> Unit
 ) {
 
     Scaffold (
         content = {
             if(state.creatingQuestions)
-                CreatingQuestions()
+                CreatingQuestionsScreen()
+            else if(state.quizFinished)
+                QuizFinishedScreen(
+                    state = state,
+                    publishResult = publishResult,
+                    restartQuiz = restartQuiz,
+                    discoverPage = discoverPage
+                )
             else {
-                ShowQuestion(
-                    question = state.questions[state.currentQuestionIndex],
+                ShowQuestionScreen(
+                    state = state,
                     showCorrectAnswer = state.showCorrectAnswer,
                     onNextQuestion = onNextQuestion
                 )
@@ -69,25 +77,32 @@ fun QuizQuestionScreen(
 }
 
 @Composable
-fun ShowQuestion(
-    question: Question,
+fun ShowQuestionScreen(
+    state: QuizQuestionState,
     showCorrectAnswer: Boolean,
     onNextQuestion: (String) -> Unit
 ) {
+    val question = state.questions[state.currentQuestionIndex]
     var answer by rememberSaveable { mutableStateOf("") }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
     ) {
-        Spacer(modifier = Modifier.fillMaxHeight(0.1F))
-        Text(text = question.text, modifier = Modifier.padding(bottom = 8.dp).align(Alignment.CenterHorizontally))
+        QuizSessionInfo(state = state)
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.08F))
+        Text(text = question.text, modifier = Modifier
+            .padding(bottom = 8.dp)
+            .align(Alignment.CenterHorizontally))
 
         SubcomposeAsyncImage(
             model = question.breedImageUrl,
             loading = { Text("Loading...") },
             error = { Text("Image loading failed") },
             contentDescription = "Breed Image",
-            modifier = Modifier.size(250.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .size(250.dp)
+                .align(Alignment.CenterHorizontally)
         )
 
         ShowOfferedAnswers(
@@ -98,10 +113,46 @@ fun ShowQuestion(
         )
 
         Button(
-            onClick = { onNextQuestion(answer) },
+            onClick = {
+                onNextQuestion(answer)
+                answer = ""
+               },
             enabled = answer.isNotEmpty(),
-            modifier = Modifier.padding(16.dp).align(Alignment.CenterHorizontally)
+            modifier = Modifier
+                .padding(16.dp)
+                .align(Alignment.CenterHorizontally)
         ) { Text("Next Question") }
+    }
+}
+
+@Composable
+fun QuizSessionInfo (
+    state: QuizQuestionState
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+    ) {
+        Text(
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) { append("Question ") }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.currentQuestionIndex} of ${state.questions.size}") }
+            }
+        )
+        Text(
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) { append("Total Points: ") }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.correctAnswers}") }
+            }
+        )
+        Text(
+            buildAnnotatedString {
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) { append("Time Left: ") }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.timeLeft / 60}:${state.timeLeft % 60}") }
+            }
+        )
     }
 }
 
@@ -137,7 +188,7 @@ fun ShowOfferedAnswers(
 }
 
 @Composable
-fun CreatingQuestions() {
+fun CreatingQuestionsScreen() {
     val randomTexts = listOf(
         "Hang in there, we're conjuring up some purr-ific questions!",
         "Stay whiskered, we're crafting some fur-nomenal queries!",
@@ -167,6 +218,56 @@ fun CreatingQuestions() {
     }
 }
 
+@Composable
+fun QuizFinishedScreen(
+    state: QuizQuestionState,
+    publishResult: (Int) -> Unit,
+    restartQuiz: () -> Unit,
+    discoverPage: () -> Unit
+) {
+    Column(
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(modifier = Modifier.fillMaxHeight(0.1F))
+
+        Text(
+            text = "Quiz Finished!",
+            style = MaterialTheme.typography.h4,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.quiz_finished),
+            contentDescription = "Quiz finished image",
+            modifier = Modifier.size(200.dp)
+        )
+        Text(
+            text = "Correct answers: ${state.correctAnswers}",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+        )
+        Text(
+            text = "Score: ${state.score}",
+            style = MaterialTheme.typography.h6,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) {
+            Button(onClick = { publishResult(state.correctAnswers) }) { Text("Publish Result") }
+            Button(onClick = { restartQuiz() }) { Text("Restart Quiz") }
+        }
+
+        Button(
+            onClick = { discoverPage() },
+            modifier = Modifier.padding(bottom = 16.dp)
+        ) { Text("Discover More Breeds") }
+    }
+}
+
+
 @Preview
 @Composable
 fun QuizQuestionScreenPreview() {
@@ -181,9 +282,32 @@ fun QuizQuestionScreenPreview() {
                     correctAnswer = "loyal"
                 )
             ),
-            currentQuestionIndex = 0
+            currentQuestionIndex = 0,
+            correctAnswers = 0,
+            timeLeft = 300L
         ),
         onBack = {},
-        onNextQuestion = {}
+        onNextQuestion = {},
+        publishResult = {},
+        restartQuiz = {},
+        discoverPage = {}
+    )
+}
+
+@Preview
+@Composable
+fun QuizFinishedScreenPreview() {
+    QuizFinishedScreen(
+        state = QuizQuestionState(
+            creatingQuestions = false,
+            questions = listOf(),
+            currentQuestionIndex = 0,
+            correctAnswers = 3,
+            timeLeft = 300L,
+            score = 80
+        ),
+        publishResult = {},
+        restartQuiz = {},
+        discoverPage = {}
     )
 }

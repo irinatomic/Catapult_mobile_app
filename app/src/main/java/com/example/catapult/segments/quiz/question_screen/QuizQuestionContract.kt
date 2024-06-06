@@ -10,12 +10,17 @@ data class Question(
 data class QuizQuestionState(
     val creatingQuestions: Boolean = true,
     val showCorrectAnswer: Boolean = false,
+    val quizFinished: Boolean = false,
 
     val questions: List<Question> = emptyList(),
     val currentQuestionIndex: Int = 0,
-    val correctAnswers: Int = 0
+    val correctAnswers: Int = 0,
+    val timeLeft: Long = 0L,
+
+    val score: Int = 0
 )
 
 sealed class QuizQuestionUiEvent {
     data class NextQuestion(val selected: String) : QuizQuestionUiEvent()
+    data object TimeUp: QuizQuestionUiEvent()
 }
