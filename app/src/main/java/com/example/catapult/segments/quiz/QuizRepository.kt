@@ -7,7 +7,7 @@ import com.example.catapult.data.database.entities.ImageDbModel
 import com.example.catapult.data.mapper.asImageDbModel
 import com.example.catapult.networking.api.BreedsApi
 import com.example.catapult.networking.retrofit
-import com.example.catapult.segments.quiz.question_screen.Question
+import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
 
 object QuizRepository {
 
@@ -37,13 +37,14 @@ object QuizRepository {
      * Shows an image of a random breed and 4 possible answers.
      */
     private suspend fun generateTypeOne(): Question {
-        val breed = database.breedDao().getAll().random()
+        val breed = database.breedDao().getAll().random()           //  correct answer
 
         val images = fetchImagesForBreed(breed.id)
 
-        val imageUrl = images[0].url
-        val answers = database.breedDao().getAll().shuffled().take(3).map { it.name.lowercase() } + breed.name.lowercase()
-        return Question("Which breed is this?", imageUrl, answers.shuffled(), breed.name.lowercase())
+        val imageUrl = images.random().url
+        val allBreeds = database.breedDao().getAll()
+        val answers = allBreeds.filter { it != breed }.shuffled().take(3).map { it.name.lowercase() } + breed.name.lowercase()
+        return Question("Which breed is this?", imageUrl, answers, breed.name.lowercase())
     }
 
     /**
@@ -55,11 +56,12 @@ object QuizRepository {
 
         val images = fetchImagesForBreed(breed.id)
 
-        val imageUrl = images[0].url
-        val correctTemperament = breed.temperament.split(",").map{ it.lowercase() }.random().trim()
+        val imageUrl = images.random().url
+        val correctTemperament = breed.temperament.split(",").map { it.lowercase() }.random().trim()
         val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
+        val falseTemperament = wrongTemperaments.random()
         val answers = wrongTemperaments + correctTemperament
-        return Question("Which temperament does not belong to this breed?", imageUrl, answers.shuffled(), correctTemperament)
+        return Question("Which temperament does not belong to this breed?", imageUrl, answers.shuffled(), falseTemperament)
     }
 
     /**
@@ -71,8 +73,8 @@ object QuizRepository {
 
         val images = fetchImagesForBreed(breed.id)
 
-        val imageUrl = images[0].url
-        val correctTemperament = breed.temperament.split(",").map{ it.lowercase() }.random().trim()
+        val imageUrl = images.random().url
+        val correctTemperament = breed.temperament.split(",").map { it.lowercase() }.random().trim()
         val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
         val answers = wrongTemperaments + correctTemperament
         return Question("Which temperament belongs to this breed?", imageUrl, answers.shuffled(), correctTemperament)

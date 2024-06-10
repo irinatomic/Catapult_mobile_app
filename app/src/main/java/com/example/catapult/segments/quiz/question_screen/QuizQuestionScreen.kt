@@ -14,16 +14,22 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.catapult.R
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
+
 
 fun NavGraphBuilder.quizQuestionScreen(
     route: String,
@@ -33,9 +39,8 @@ fun NavGraphBuilder.quizQuestionScreen(
     val quizQuestionViewModel = viewModel<QuizQuestionViewModel>()
     val state by quizQuestionViewModel.state.collectAsState()
 
-QuizQuestionScreen(
+    QuizQuestionScreen(
         state = state,
-        onBack = { navController.popBackStack() },
         onNextQuestion = { answer -> quizQuestionViewModel.setEvent(QuizQuestionUiEvent.NextQuestion(answer)) },
         publishResult = { score -> },
         restartQuiz = { navController.navigate("quiz/start") },
@@ -47,12 +52,13 @@ QuizQuestionScreen(
 @Composable
 fun QuizQuestionScreen(
     state: QuizQuestionState,
-    onBack: () -> Unit,
     onNextQuestion: (String) -> Unit,
     publishResult: (Int) -> Unit,
     restartQuiz: () -> Unit,
     discoverPage: () -> Unit
 ) {
+
+    // TODO: add back handler -> cannot go back
 
     Scaffold (
         content = {
@@ -76,6 +82,7 @@ fun QuizQuestionScreen(
     )
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ShowQuestionScreen(
     state: QuizQuestionState,
@@ -95,15 +102,21 @@ fun ShowQuestionScreen(
             .padding(bottom = 8.dp)
             .align(Alignment.CenterHorizontally))
 
-        SubcomposeAsyncImage(
-            model = question.breedImageUrl,
-            loading = { Text("Loading...") },
-            error = { Text("Image loading failed") },
-            contentDescription = "Breed Image",
+        BoxWithConstraints(
             modifier = Modifier
                 .size(250.dp)
                 .align(Alignment.CenterHorizontally)
-        )
+        ) {
+            SubcomposeAsyncImage(
+                model = question.breedImageUrl,
+                loading = { Text("Loading...") },
+                error = { Text("Image loading failed") },
+                contentDescription = "Breed Image",
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.08F))
 
         ShowOfferedAnswers(
             question = question,
@@ -112,18 +125,65 @@ fun ShowQuestionScreen(
             showCorrectAnswer = showCorrectAnswer
         )
 
+        Spacer(modifier = Modifier.fillMaxHeight(0.16F))
+
         Button(
             onClick = {
                 onNextQuestion(answer)
                 answer = ""
-               },
+            },
             enabled = answer.isNotEmpty(),
-            modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         ) { Text("Next Question") }
     }
 }
+
+@Composable
+fun ShowOfferedAnswers(
+    question: Question,
+    selectedAnswer: String,
+    onAnswerSelected: (String) -> Unit,
+    showCorrectAnswer: Boolean              // when true, show correct answer in green, wrong answers in red
+) {
+    val correctAnswer = question.correctAnswer
+
+    Column {
+        question.answers.chunked(2).forEach { rowAnswers ->
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                rowAnswers.forEach { ans ->
+                    Card(
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(2.dp)
+                            .clickable { onAnswerSelected(ans) }
+                            .border(
+                                width = 2.dp,
+                                color = when {
+                                    showCorrectAnswer && ans == correctAnswer -> Color.Green
+                                    showCorrectAnswer && ans != correctAnswer -> Color.Red
+                                    ans == selectedAnswer -> MaterialTheme.colors.primary
+                                    else -> Color.Transparent
+                                },
+                                shape = RoundedCornerShape(4.dp)
+                            ),
+                        elevation = 4.dp
+                    ) {
+                        Text(
+                            text = ans,
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            color = MaterialTheme.colors.onSurface,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
 
 @Composable
 fun QuizSessionInfo (
@@ -153,37 +213,6 @@ fun QuizSessionInfo (
                 withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.timeLeft / 60}:${state.timeLeft % 60}") }
             }
         )
-    }
-}
-
-@Composable
-fun ShowOfferedAnswers(
-    question: Question,
-    selectedAnswer: String,
-    onAnswerSelected: (String) -> Unit,
-    showCorrectAnswer: Boolean              // when true, the correct answer is green and the wrong answers are red
-) {
-    val correctAnswer = question.correctAnswer
-
-    question.answers.forEach { ans ->
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 85.dp)
-        ) {
-            RadioButton(
-                selected = (ans == selectedAnswer),
-                onClick = { onAnswerSelected(ans) },
-            )
-            Text(
-                text = ans,
-                modifier = Modifier.padding(start = 2.dp),
-                color = if(showCorrectAnswer) {
-                    if (ans != correctAnswer) MaterialTheme.colors.error
-                    else Color.Green
-                } else MaterialTheme.colors.onSurface,
-                fontWeight = FontWeight.SemiBold
-            )
-        }
     }
 }
 
@@ -286,7 +315,6 @@ fun QuizQuestionScreenPreview() {
             correctAnswers = 0,
             timeLeft = 300L
         ),
-        onBack = {},
         onNextQuestion = {},
         publishResult = {},
         restartQuiz = {},

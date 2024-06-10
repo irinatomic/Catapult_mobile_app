@@ -1,5 +1,6 @@
 package com.example.catapult.segments.breeds.images_screen
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.fillMaxSize
@@ -40,6 +41,7 @@ fun NavGraphBuilder.breedImagesScreen(
     route: String,
     navController: NavController,
     arguments: List<NamedNavArgument>,
+    onBack: () -> Unit,
 ) = composable(route = route, arguments = arguments) { backStackEntry ->
     val breedId = backStackEntry.arguments?.getString("breedId")
         ?: throw IllegalArgumentException("id is required.")
@@ -53,11 +55,16 @@ fun NavGraphBuilder.breedImagesScreen(
         }
     )
 
+    val onImageClick: (String) -> Unit = { imageId ->
+        navController.navigate("breed/images/${breedId}?currentImage=$imageId")
+    }
+
     val state = breedImagesViewModel.state.collectAsState()
 
     BreedImagesScreen(
         state = state.value,
-        onBack = { navController.popBackStack() }
+        onImageClick = onImageClick,
+        onBack = onBack
     )
 }
 
@@ -65,6 +72,7 @@ fun NavGraphBuilder.breedImagesScreen(
 @Composable
 fun BreedImagesScreen(
     state: BreedImagesState,
+    onImageClick: (breedId: String) -> Unit,
     onBack: () -> Unit,
 ) {
     Scaffold(
@@ -104,7 +112,12 @@ fun BreedImagesScreen(
                         val aspectRatio = image.width.toFloat() / image.height.toFloat()
                         val imageHeightDp = cellSize / aspectRatio
 
-                        Card(modifier = Modifier.width(cellSize).height(imageHeightDp)) {
+                        Card(
+                            modifier = Modifier
+                                .width(cellSize)
+                                .height(imageHeightDp)
+                                .clickable { onImageClick(image.id) },
+                            ) {
                             SubcomposeAsyncImage(
                                 modifier = Modifier.fillMaxSize(),
                                 model = image.url,

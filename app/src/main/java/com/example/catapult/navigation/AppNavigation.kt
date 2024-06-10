@@ -13,6 +13,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.catapult.navigation_drawer.DrawerMenu
+import com.example.catapult.segments.breeds.gallery_screen.breedGalleryScreen
 import com.example.catapult.segments.breeds.images_screen.breedImagesScreen
 import com.example.catapult.segments.quiz.question_screen.quizQuestionScreen
 import com.example.catapult.segments.quiz.start_screen.quizStartScreen
@@ -69,10 +70,27 @@ fun AppNavigation() {
                 route = "breed/images/{breedId}",
                 arguments = listOf(
                     navArgument("breedId") {
+                        nullable = false
                         type = NavType.StringType
                     },
                 ),
                 navController = navController,
+                onBack = { navController.navigateUp() }
+            )
+
+            breedGalleryScreen(
+                route = "breed/images/{breedId}?currentImage={currentImage}",
+                arguments = listOf(
+                    navArgument(name = "breedId") {
+                        nullable = false
+                        type = NavType.StringType
+                    },
+                    navArgument(name = "currentImage") {
+                        nullable = false
+                        type = NavType.StringType
+                    }
+                ),
+                onBack = { navController.navigateUp() }
             )
 
             quizStartScreen(

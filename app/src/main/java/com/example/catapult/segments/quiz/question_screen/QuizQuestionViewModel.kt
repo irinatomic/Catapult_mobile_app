@@ -16,13 +16,13 @@ class QuizQuestionViewModel(
     private val repository: QuizRepository = QuizRepository
 ): ViewModel() {
 
-    private val _state = MutableStateFlow(QuizQuestionState())
+    private val _state = MutableStateFlow(QuizQuestionContract.QuizQuestionState())
     val state = _state.asStateFlow()
 
-    private fun setState(reducer: QuizQuestionState.() -> QuizQuestionState) = _state.getAndUpdate(reducer)
+    private fun setState(reducer: QuizQuestionContract.QuizQuestionState.() -> QuizQuestionContract.QuizQuestionState) = _state.getAndUpdate(reducer)
 
-    private val events = MutableSharedFlow <QuizQuestionUiEvent>()
-    fun setEvent(event: QuizQuestionUiEvent) {
+    private val events = MutableSharedFlow <QuizQuestionContract.QuizQuestionUiEvent>()
+    fun setEvent(event: QuizQuestionContract.QuizQuestionUiEvent) {
         viewModelScope.launch {
             events.emit(event)
         }
@@ -34,7 +34,7 @@ class QuizQuestionViewModel(
             setState { copy(timeLeft = millisUntilFinished / 1000) }
         }
         override fun onFinish() {
-            setEvent(QuizQuestionUiEvent.TimeUp)
+            setEvent(QuizQuestionContract.QuizQuestionUiEvent.TimeUp)
         }
     }
 
@@ -50,7 +50,7 @@ class QuizQuestionViewModel(
         viewModelScope.launch {
             events.collect {
                 when(it) {
-                    is QuizQuestionUiEvent.NextQuestion -> {
+                    is QuizQuestionContract.QuizQuestionUiEvent.NextQuestion -> {
                         setState { copy(showCorrectAnswer = true)}
                         delay(1000)
                         setState { copy(showCorrectAnswer = false)}
@@ -68,7 +68,7 @@ class QuizQuestionViewModel(
                             endQuiz()
                     }
 
-                    is QuizQuestionUiEvent.TimeUp -> { endQuiz() }
+                    is QuizQuestionContract.QuizQuestionUiEvent.TimeUp -> { endQuiz() }
                 }
             }
         }
