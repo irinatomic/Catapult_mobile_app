@@ -3,12 +3,8 @@ package com.example.catapult.segments.breeds.gallery_screen
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PageSize
-import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -20,8 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavGraphBuilder
@@ -40,22 +35,9 @@ fun NavGraphBuilder.breedGalleryScreen(
     arguments = arguments,
     enterTransition = { slideInVertically { it } },
     popExitTransition = { slideOutVertically { it } },
-) {navBackStackEntry ->
+) {backStackEntry ->
 
-    val breedId = navBackStackEntry.arguments?.getString("breedId")
-        ?: throw IllegalStateException("breedId required")
-    val currentImage = navBackStackEntry.arguments?.getString("currentImage")
-        ?: throw IllegalStateException("currentImage required")
-
-    val breedGalleryViewModel = viewModel<BreedGalleryViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return BreedGalleryViewModel(breedId = breedId, currentImage = currentImage) as T
-            }
-        }
-    )
-
+    val breedGalleryViewModel = hiltViewModel<BreedGalleryViewModel>(backStackEntry)
     val state = breedGalleryViewModel.state.collectAsState()
 
     BreedGalleryScreen(

@@ -1,14 +1,12 @@
 import android.util.Log
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,36 +18,35 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.catapult.R
 import com.example.catapult.data.ui.BreedUiModel
+import com.example.catapult.navigation_drawer.AppDrawer
+import com.example.catapult.navigation_drawer.DrawerMenu
 import com.example.catapult.navigation_drawer.HamburgerMenu
-import com.example.catapult.segments.breeds.list_screen.BreedsListState
-import com.example.catapult.segments.breeds.list_screen.BreedsListViewModel
-import com.example.catapult.segments.breeds.list_screen.BreedsListUIEvent
+import com.example.catapult.segments.breeds.list_screen.*
+import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.breedsListScreen(
     route: String,
     navController: NavController,
-    drawerState: DrawerState,
 ) = composable(route = route) {
-    val breedsListViewModel = viewModel<BreedsListViewModel>()
+
+    val breedsListViewModel = hiltViewModel<BreedsListViewModel>()
     val state by breedsListViewModel.state.collectAsState()
 
     BreedsListScreen(
         state = state,
-        drawerState = drawerState,
         eventPublisher = { breedsListViewModel.setEvent(it) },
         onItemClick = { breed ->
             navController.navigate("breed/details/${breed.id}")
-        }
+        },
+        navController = navController
     )
 }
 
@@ -57,55 +54,69 @@ fun NavGraphBuilder.breedsListScreen(
 @Composable
 fun BreedsListScreen(
     state: BreedsListState,
-    drawerState: DrawerState,
     eventPublisher: (BreedsListUIEvent) -> Unit,
     onItemClick: (BreedUiModel) -> Unit,
+    navController: NavController
 ) {
-    Scaffold (
 
-        // TOP BAR
-        topBar = {
-            if (!state.searchActive) {
-                TopAppBar(
-                    title = { Text(stringResource(id = R.string.app_name)) },
-                    navigationIcon = { HamburgerMenu(drawerState) },
-                    actions = {
-                        IconButton(onClick = { eventPublisher(BreedsListUIEvent.StartSearch) }) {
-                            Icon(Icons.Filled.Search, contentDescription = stringResource(id = R.string.search))
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val scope = rememberCoroutineScope()
+
+    ModalNavigationDrawer(
+        drawerState = drawerState,
+        drawerContent = {
+            AppDrawer(
+                navController = navController,
+                drawerState = drawerState,
+                scope = scope)
+        }
+    ) {
+        Scaffold (
+
+            // TOP BAR
+            topBar = {
+                if (!state.searchActive) {
+                    TopAppBar(
+                        title = { Text(stringResource(id = R.string.app_name)) },
+                        navigationIcon = { HamburgerMenu(drawerState) },
+                        actions = {
+                            IconButton(onClick = { eventPublisher(BreedsListUIEvent.StartSearch) }) {
+                                Icon(Icons.Filled.Search, contentDescription = stringResource(id = R.string.search))
+                            }
+                        }
+                    )
+                }
+            },
+
+            // CONTENT
+            content = {
+                if (state.searchActive) {
+                    SearchMode(
+                        state = state,
+                        eventPublisher = eventPublisher,
+                        onItemClick = onItemClick
+                    )
+                } else {
+                    BreedsList(
+                        items = state.breeds,
+                        paddingValues = it,
+                        onItemClick = onItemClick,
+                    )
+
+                    if (state.breeds.isEmpty()) {
+                        when {
+                            state.fetching -> FetchingData()
+                            state.error is BreedsListState.ListError.ListUpdateFailed ->
+                                ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
+                            else -> NoData()
                         }
                     }
-                )
-            }
-        },
-
-        // CONTENT
-        content = {
-            if (state.searchActive) {
-                SearchMode(
-                    state = state,
-                    eventPublisher = eventPublisher,
-                    onItemClick = onItemClick
-                )
-            } else {
-                BreedsList(
-                    items = state.breeds,
-                    paddingValues = it,
-                    onItemClick = onItemClick,
-                )
-
-                if (state.breeds.isEmpty()) {
-                    when {
-                        state.fetching -> FetchingData()
-                        state.error is BreedsListState.ListError.ListUpdateFailed ->
-                            ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
-                        else -> NoData()
-                    }
                 }
-            }
-        },
+            },
 
-        // NO BOTTOM BAR
-    )
+            // NO BOTTOM BAR
+        )
+    }
 }
 
 @Composable
@@ -170,7 +181,9 @@ private fun BreedsList (
     onItemClick: (BreedUiModel) -> Unit,
 ) {
     LazyColumn (
-        modifier = Modifier.fillMaxSize().padding(paddingValues),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top,
     ) {

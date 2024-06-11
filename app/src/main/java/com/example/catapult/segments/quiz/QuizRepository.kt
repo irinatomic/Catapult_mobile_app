@@ -1,18 +1,18 @@
 package com.example.catapult.segments.quiz
 
+import com.example.catapult.data.database.AppDatabase
 import kotlinx.coroutines.*
 import kotlin.random.Random
-import com.example.catapult.data.database.CatapultDatabase
 import com.example.catapult.data.database.entities.ImageDbModel
 import com.example.catapult.data.mapper.asImageDbModel
-import com.example.catapult.networking.api.BreedsApi
-import com.example.catapult.networking.retrofit
+import com.example.catapult.networking.endpoints.BreedsApi
 import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
+import javax.inject.Inject
 
-object QuizRepository {
-
-    private val database by lazy { CatapultDatabase.database }
-    private val breedsApi: BreedsApi = retrofit.create(BreedsApi::class.java)
+class QuizRepository @Inject constructor(
+    private val database: AppDatabase,
+    private val breedsApi: BreedsApi
+) {
 
     private var temperaments: List<String> = listOf()
 

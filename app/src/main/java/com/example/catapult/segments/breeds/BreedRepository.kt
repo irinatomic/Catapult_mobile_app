@@ -1,23 +1,24 @@
 package com.example.catapult.segments.breeds
 
-import com.example.catapult.networking.api.BreedsApi
-import com.example.catapult.data.database.CatapultDatabase
+import com.example.catapult.data.database.AppDatabase
+import com.example.catapult.networking.endpoints.BreedsApi
 import com.example.catapult.data.database.entities.BreedDbModel
 import com.example.catapult.data.database.entities.ImageDbModel
 import com.example.catapult.data.mapper.asBreedDbModel
 import com.example.catapult.data.mapper.asImageDbModel
-import com.example.catapult.networking.retrofit
 import kotlinx.coroutines.flow.Flow
+import javax.inject.Inject
 
 /**
  * Database is the single source of truth for breeds.
  * This repository is responsible for fetching breeds from the API and saving them to the database.
  * It also provides a way to observe all breeds from the database.
 */
-object BreedRepository {
 
-    private val database by lazy { CatapultDatabase.database }
-    private val breedsApi: BreedsApi = retrofit.create(BreedsApi::class.java)
+class BreedRepository @Inject constructor(
+    private val database: AppDatabase,
+    private val breedsApi: BreedsApi
+) {
 
     // API request -> save to db
     suspend fun fetchBreeds() {

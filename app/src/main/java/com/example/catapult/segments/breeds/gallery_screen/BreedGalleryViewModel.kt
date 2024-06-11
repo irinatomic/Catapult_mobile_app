@@ -1,25 +1,27 @@
 package com.example.catapult.segments.breeds.gallery_screen
 
-import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapult.data.mapper.asImageUiModel
 import com.example.catapult.segments.breeds.BreedRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import com.example.catapult.segments.breeds.gallery_screen.BreedGalleryContract.*
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.getAndUpdate
+import javax.inject.Inject
 
-class BreedGalleryViewModel (
-    private val breedId: String,
-    private val currentImage: String,
-    private val repository: BreedRepository = BreedRepository,
+@HiltViewModel
+class BreedGalleryViewModel @Inject constructor (
+    savedStateHandle: SavedStateHandle,
+    private val repository: BreedRepository
 ) : ViewModel() {
+
+    private val breedId = savedStateHandle.get<String>("breedId")!!
+    private val currentImage = savedStateHandle.get<String>("currentImage")!!
 
     private val _state = MutableStateFlow(BreedGalleryState())
     val state = _state.asStateFlow()

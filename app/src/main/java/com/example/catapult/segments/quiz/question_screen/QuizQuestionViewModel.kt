@@ -5,15 +5,18 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapult.segments.quiz.QuizRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class QuizQuestionViewModel(
-    private val repository: QuizRepository = QuizRepository
+@HiltViewModel
+class QuizQuestionViewModel @Inject constructor (
+    private val repository: QuizRepository
 ): ViewModel() {
 
     private val _state = MutableStateFlow(QuizQuestionContract.QuizQuestionState())
@@ -42,7 +45,6 @@ class QuizQuestionViewModel(
         observeEvents()
         // observeQuestions not needed since the questions are created in the repository
         createQuestions()
-        timer.start()
     }
 
     /** Observe events sent from UI to this View Model */
@@ -82,6 +84,7 @@ class QuizQuestionViewModel(
             val questions = repository.generateQuestions()
             setState { copy(questions = questions, creatingQuestions = false) }
 
+            timer.start()
             Log.d("IRINA", "Questions created $questions")
         }
     }

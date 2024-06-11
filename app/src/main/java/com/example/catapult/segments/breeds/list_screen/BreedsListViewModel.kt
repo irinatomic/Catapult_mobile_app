@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapult.segments.breeds.BreedRepository
 import com.example.catapult.data.mapper.asBreedUiModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,9 +15,11 @@ import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import javax.inject.Inject
 
-class BreedsListViewModel(
-    private val repository: BreedRepository = BreedRepository
+@HiltViewModel
+class BreedsListViewModel @Inject constructor(
+    private val repository: BreedRepository
 ): ViewModel() {
 
      private val _state = MutableStateFlow(BreedsListState())

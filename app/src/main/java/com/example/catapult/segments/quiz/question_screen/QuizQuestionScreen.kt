@@ -1,6 +1,10 @@
 package com.example.catapult.segments.quiz.question_screen
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,20 +27,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.example.catapult.R
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.sp
 import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
-
+import androidx.compose.material.icons.filled.Timer
+import androidx.compose.material.Icon
+import androidx.hilt.navigation.compose.hiltViewModel
 
 fun NavGraphBuilder.quizQuestionScreen(
     route: String,
     navController: NavController,
 ) = composable(route = route) {
 
-    val quizQuestionViewModel = viewModel<QuizQuestionViewModel>()
+    val quizQuestionViewModel = hiltViewModel<QuizQuestionViewModel>()
     val state by quizQuestionViewModel.state.collectAsState()
 
     QuizQuestionScreen(
@@ -58,7 +66,7 @@ fun QuizQuestionScreen(
     discoverPage: () -> Unit
 ) {
 
-    // TODO: add back handler -> cannot go back
+    BackHandler(onBack = { /* Disabled */ })
 
     Scaffold (
         content = {
@@ -97,10 +105,9 @@ fun ShowQuestionScreen(
     ) {
         QuizSessionInfo(state = state)
 
+        CountdownTimer(timeLeft = state.timeLeft, modifier = Modifier.align(Alignment.CenterHorizontally))
+
         Spacer(modifier = Modifier.fillMaxHeight(0.08F))
-        Text(text = question.text, modifier = Modifier
-            .padding(bottom = 8.dp)
-            .align(Alignment.CenterHorizontally))
 
         BoxWithConstraints(
             modifier = Modifier
@@ -112,11 +119,17 @@ fun ShowQuestionScreen(
                 loading = { Text("Loading...") },
                 error = { Text("Image loading failed") },
                 contentDescription = "Breed Image",
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         }
 
-        Spacer(modifier = Modifier.fillMaxHeight(0.08F))
+        // TODO make text larger
+        Text(text = question.text, fontSize = 12.sp, modifier = Modifier
+            .padding(top = 10.dp)
+            .align(Alignment.CenterHorizontally))
+
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.05F))
 
         ShowOfferedAnswers(
             question = question,
@@ -186,7 +199,7 @@ fun ShowOfferedAnswers(
 
 
 @Composable
-fun QuizSessionInfo (
+fun QuizSessionInfo(
     state: QuizQuestionState
 ) {
     Row(
@@ -197,21 +210,62 @@ fun QuizSessionInfo (
     ) {
         Text(
             buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) { append("Question ") }
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.currentQuestionIndex} of ${state.questions.size}") }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                    append("Question: ")
+                }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                    append("${state.currentQuestionIndex} of ${state.questions.size}")
+                }
             }
         )
         Text(
             buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) { append("Total Points: ") }
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.correctAnswers}") }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                    append("Correct answers: ")
+                }
+                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                    append("${state.correctAnswers}")
+                }
             }
         )
+    }
+}
+
+
+@Composable
+fun CountdownTimer(
+    timeLeft: Long,
+    modifier: Modifier
+) {
+    val animatedTimeLeft = remember { Animatable(timeLeft.toFloat()) }
+
+    LaunchedEffect(timeLeft) {
+        animatedTimeLeft.animateTo(
+            targetValue = timeLeft.toFloat(),
+            animationSpec = tween(
+                durationMillis = 1000, // duration of one second
+                easing = LinearEasing
+            )
+        )
+    }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Icon(
+            imageVector = Icons.Default.Timer,
+            contentDescription = "Timer",
+            tint = MaterialTheme.colors.primary,
+            modifier = Modifier.size(20.dp)
+        )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
-            buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary)) { append("Time Left: ") }
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface)) { append("${state.timeLeft / 60}:${state.timeLeft % 60}") }
-            }
+            text = String.format("%02d:%02d", animatedTimeLeft.value.toInt() / 60, animatedTimeLeft.value.toInt() % 60),
+            color = MaterialTheme.colors.onSurface,
+            fontWeight = FontWeight.Bold,
+            fontSize = 20.sp
         )
     }
 }

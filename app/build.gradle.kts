@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrainsKotlinAndroid)
     kotlin("plugin.serialization") version "1.9.22"
 
+    id("com.google.dagger.hilt.android")
     id("com.google.devtools.ksp") version "1.9.23-1.0.20"
 }
 
@@ -68,6 +69,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.perf.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -105,8 +107,15 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.6.0")
 
     // Compose
-    implementation("androidx.compose.ui:ui:1.1.0")
-    implementation("androidx.compose.material:material:1.1.0")
-    implementation("androidx.compose.ui:ui-tooling:1.1.0")
+    implementation("androidx.compose.ui:ui:1.4.0")
+    implementation("androidx.compose.material:material:1.4.0")
+    implementation("androidx.compose.ui:ui-tooling:1.4.0")
     implementation("androidx.compose.foundation:foundation:1.3.0")
+    implementation("androidx.compose.material:material-icons-extended:1.4.0")
+
+    // Hilt
+    val hiltVersion = "2.51"
+    implementation("com.google.dagger:hilt-android:$hiltVersion")
+    ksp("com.google.dagger:hilt-android-compiler:$hiltVersion")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")  // Hilt Compose Navigation support (hiltViewModel factory)
 }

@@ -1,4 +1,4 @@
-package com.example.catapult.networking.api
+package com.example.catapult.networking.endpoints
 
 import com.example.catapult.data.api.BreedApiModel
 import com.example.catapult.data.api.ImageApiModel

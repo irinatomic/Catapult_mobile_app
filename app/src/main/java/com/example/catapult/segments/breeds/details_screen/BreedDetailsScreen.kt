@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.R
@@ -40,20 +41,10 @@ fun NavGraphBuilder.breedDetailsScreen(
     navController: NavController,
     arguments: List<NamedNavArgument>,
 ) = composable(route = route, arguments = arguments) { backStackEntry ->
-    val breedId = backStackEntry.arguments?.getString("breedId")
-        ?: throw IllegalArgumentException("id is required.")
 
-    // ViewModel has a custom constructor -> so we need to
-    // provide a factory to instantiate it
-    val breedDetailsViewModel = viewModel<BreedDetailsViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return BreedDetailsViewModel(breedId) as T
-            }
-        }
-    )
+    val breedId = backStackEntry.arguments?.getString("breedId") ?: ""
 
+    val breedDetailsViewModel = hiltViewModel<BreedDetailsViewModel>(backStackEntry)
     val state = breedDetailsViewModel.state.collectAsState()
 
     BreedDetailsScreen(
@@ -133,7 +124,9 @@ private fun BreedDetails(
                 Text(
                     text = "${stringResource(id = R.string.breed_name)}: ${info.name}",
                     style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.padding(8.dp).weight(1f)
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .weight(1f)
                 )
 
                 Button(
@@ -194,7 +187,9 @@ private fun BreedImage(
     imageUrl: String
 ) {
     Box(
-        modifier = Modifier.fillMaxWidth().padding(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
         SubcomposeAsyncImage(

@@ -35,6 +35,7 @@ import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.R
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.catapult.data.ui.ImageUiModel
 
 fun NavGraphBuilder.breedImagesScreen(
@@ -43,23 +44,15 @@ fun NavGraphBuilder.breedImagesScreen(
     arguments: List<NamedNavArgument>,
     onBack: () -> Unit,
 ) = composable(route = route, arguments = arguments) { backStackEntry ->
-    val breedId = backStackEntry.arguments?.getString("breedId")
-        ?: throw IllegalArgumentException("id is required.")
 
-    val breedImagesViewModel = viewModel<BreedImagesViewModel>(
-        factory = object : ViewModelProvider.Factory {
-            @Suppress("UNCHECKED_CAST")
-            override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                return BreedImagesViewModel(breedId) as T
-            }
-        }
-    )
+    val breedId = backStackEntry.arguments?.getString("breedId") ?: ""
+
+    val breedImagesViewModel = hiltViewModel<BreedImagesViewModel>(backStackEntry)
+    val state = breedImagesViewModel.state.collectAsState()
 
     val onImageClick: (String) -> Unit = { imageId ->
         navController.navigate("breed/images/${breedId}?currentImage=$imageId")
     }
-
-    val state = breedImagesViewModel.state.collectAsState()
 
     BreedImagesScreen(
         state = state.value,
