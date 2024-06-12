@@ -13,6 +13,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 import javax.inject.Named
 import javax.inject.Singleton
 
@@ -30,6 +31,7 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
+            .readTimeout(10, TimeUnit.SECONDS)    // socket timeout
             .addInterceptor(Interceptor { chain ->
                 val originalRequest = chain.request()
                 val newRequest = originalRequest.newBuilder()

@@ -5,22 +5,19 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import coil.compose.SubcomposeAsyncImage
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,11 +30,11 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.unit.sp
 import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.Icon
 import androidx.hilt.navigation.compose.hiltViewModel
+import coil.compose.SubcomposeAsyncImage
 
 fun NavGraphBuilder.quizQuestionScreen(
     route: String,
@@ -51,6 +48,7 @@ fun NavGraphBuilder.quizQuestionScreen(
         state = state,
         onNextQuestion = { answer -> quizQuestionViewModel.setEvent(QuizQuestionUiEvent.NextQuestion(answer)) },
         publishResult = { score -> },
+        cancelQuiz = { navController.navigate("quiz/start")},
         restartQuiz = { navController.navigate("quiz/start") },
         discoverPage = { navController.navigate("breeds") }
     )
@@ -62,6 +60,7 @@ fun QuizQuestionScreen(
     state: QuizQuestionState,
     onNextQuestion: (String) -> Unit,
     publishResult: (Int) -> Unit,
+    cancelQuiz: () -> Unit,
     restartQuiz: () -> Unit,
     discoverPage: () -> Unit
 ) {
@@ -83,7 +82,8 @@ fun QuizQuestionScreen(
                 ShowQuestionScreen(
                     state = state,
                     showCorrectAnswer = state.showCorrectAnswer,
-                    onNextQuestion = onNextQuestion
+                    onNextQuestion = onNextQuestion,
+                    cancelQuiz = cancelQuiz
                 )
             }
         }
@@ -95,13 +95,35 @@ fun QuizQuestionScreen(
 fun ShowQuestionScreen(
     state: QuizQuestionState,
     showCorrectAnswer: Boolean,
-    onNextQuestion: (String) -> Unit
+    onNextQuestion: (String) -> Unit,
+    cancelQuiz: () -> Unit,
 ) {
     val question = state.questions[state.currentQuestionIndex]
     var answer by rememberSaveable { mutableStateOf("") }
+    var showCancelDialog by remember { mutableStateOf(false) }
+
+    if (showCancelDialog) {
+        AlertDialog(
+            onDismissRequest = { showCancelDialog = false },
+            title = { Text("Are you sure you want to give up?") },
+            confirmButton = {
+                Button(onClick = {
+                    showCancelDialog = false
+                    cancelQuiz()
+                }) {
+                    Text("Yes")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showCancelDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
     ) {
         QuizSessionInfo(state = state)
 
@@ -123,11 +145,9 @@ fun ShowQuestionScreen(
             )
         }
 
-        // TODO make text larger
-        Text(text = question.text, fontSize = 12.sp, modifier = Modifier
+        Text(text = question.text, fontSize = 18.sp, modifier = Modifier
             .padding(top = 10.dp)
             .align(Alignment.CenterHorizontally))
-
 
         Spacer(modifier = Modifier.fillMaxHeight(0.05F))
 
@@ -148,6 +168,13 @@ fun ShowQuestionScreen(
             enabled = answer.isNotEmpty(),
             modifier = Modifier.align(Alignment.CenterHorizontally)
         ) { Text("Next Question") }
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.08F))
+
+        Button(
+            onClick = { showCancelDialog = true },
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        ) { Text("Cancel Quiz") }
     }
 }
 
@@ -372,7 +399,8 @@ fun QuizQuestionScreenPreview() {
         onNextQuestion = {},
         publishResult = {},
         restartQuiz = {},
-        discoverPage = {}
+        discoverPage = {},
+        cancelQuiz = {}
     )
 }
 

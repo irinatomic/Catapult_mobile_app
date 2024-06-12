@@ -1,6 +1,7 @@
 package com.example.catapult.segments.quiz
 
 import com.example.catapult.data.database.AppDatabase
+import com.example.catapult.data.database.entities.BreedDbModel
 import kotlinx.coroutines.*
 import kotlin.random.Random
 import com.example.catapult.data.database.entities.ImageDbModel
@@ -18,7 +19,7 @@ class QuizRepository @Inject constructor(
 
     suspend fun generateQuestions(): List<Question> = coroutineScope {
         val questions = mutableListOf<Deferred<Question>>()
-        repeat(5) {
+        repeat(10) {
             questions += async {
                 withContext(Dispatchers.IO) {
                     when (Random.nextInt(3)) {
@@ -37,9 +38,7 @@ class QuizRepository @Inject constructor(
      * Shows an image of a random breed and 4 possible answers.
      */
     private suspend fun generateTypeOne(): Question {
-        val breed = database.breedDao().getAll().random()           //  correct answer
-
-        val images = fetchImagesForBreed(breed.id)
+        val (breed, images) = chooseBreedWithImages()       //  correct answer
 
         val imageUrl = images.random().url
         val allBreeds = database.breedDao().getAll()
@@ -52,9 +51,7 @@ class QuizRepository @Inject constructor(
      * Shows an image of a random breed and 4 possible answers.
      */
     private suspend fun generateTypeTwo(): Question {
-        val breed = database.breedDao().getAll().random()
-
-        val images = fetchImagesForBreed(breed.id)
+        val (breed, images) = chooseBreedWithImages()       //  correct answer
 
         val imageUrl = images.random().url
         val correctTemperament = breed.temperament.split(",").map { it.lowercase() }.random().trim()
@@ -69,15 +66,27 @@ class QuizRepository @Inject constructor(
      * Shows an image of a random breed and 4 possible answers.
      */
     private suspend fun generateTypeThree(): Question {
-        val breed = database.breedDao().getAll().random()
-
-        val images = fetchImagesForBreed(breed.id)
+        val (breed, images) = chooseBreedWithImages()       //  correct answer
 
         val imageUrl = images.random().url
         val correctTemperament = breed.temperament.split(",").map { it.lowercase() }.random().trim()
         val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
         val answers = wrongTemperaments + correctTemperament
         return Question("Which temperament belongs to this breed?", imageUrl, answers.shuffled(), correctTemperament)
+    }
+
+    /**
+     * Logic to choose the random breed which will be the correct answer to a question.
+     * Not all breeds have images, so we need to keep trying until we find one that does.
+     */
+    private suspend fun chooseBreedWithImages(): Pair<BreedDbModel, List<ImageDbModel>> {
+        while (true) {
+            val breed = database.breedDao().getAll().random()
+            val images = fetchImagesForBreed(breed.id)
+            if (images.isNotEmpty()) {
+                return breed to images
+            }
+        }
     }
 
     /**

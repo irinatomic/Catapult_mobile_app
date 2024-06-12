@@ -34,9 +34,9 @@ interface BreedDao {
             .asSequence()
             .map { it.temperament.split(",") }
             .flatten()
-            .map { it.trim() }
-            .map{ it.lowercase() }
-            .distinct()
             .toList()
+            .map { it.trim() }
+            .map { it.lowercase() }
+            .distinct()
     }
 }
