@@ -10,8 +10,10 @@ import com.example.catapult.data.database.entities.*
         UserDbModel :: class,
         BreedDbModel :: class,
         ImageDbModel :: class,
+        ResultDbModel :: class,
+        LBItemDbModel :: class
     ],
-    version = 2,
+    version = 4,
     exportSchema = true,
 )
 abstract class AppDatabase: RoomDatabase() {
@@ -21,4 +23,8 @@ abstract class AppDatabase: RoomDatabase() {
     abstract fun breedDao(): BreedDao
 
     abstract fun imageDao(): ImageDao
+
+    abstract fun resultDao(): ResultDao
+
+    abstract fun leaderboardDao(): LBItemDao
 }

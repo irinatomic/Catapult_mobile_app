@@ -5,6 +5,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.catapult.segments.breeds.gallery_screen.breedGalleryScreen
 import com.example.catapult.segments.breeds.images_screen.breedImagesScreen
+import com.example.catapult.segments.leaderboard.screen.leaderboardScreen
 import com.example.catapult.segments.quiz.question_screen.quizQuestionScreen
 import com.example.catapult.segments.quiz.start_screen.quizStartScreen
 
@@ -64,6 +65,11 @@ fun AppNavigation() {
 
         quizQuestionScreen(
             route = "quiz",
+            navController = navController,
+        )
+
+        leaderboardScreen(
+            route = "leaderboard",
             navController = navController,
         )
     }
