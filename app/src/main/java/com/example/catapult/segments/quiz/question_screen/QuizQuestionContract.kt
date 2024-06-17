@@ -4,7 +4,8 @@ interface QuizQuestionContract {
 
     data class Question(
         val text: String,
-        val breedImageUrl: String,
+        val breedId: String,
+        var breedImageUrl: String? = "",
         val answers: List<String>,
         val correctAnswer: String
     )
@@ -19,7 +20,7 @@ interface QuizQuestionContract {
         val correctAnswers: Int = 0,
         val timeLeft: Long = 0L,
 
-        val score: Int = 0
+        val score: Double = 0.0
     )
 
     sealed class QuizQuestionUiEvent {

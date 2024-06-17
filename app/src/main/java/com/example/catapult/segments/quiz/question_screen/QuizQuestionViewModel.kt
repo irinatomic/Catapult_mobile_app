@@ -6,12 +6,14 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.catapult.segments.quiz.QuizRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -53,11 +55,19 @@ class QuizQuestionViewModel @Inject constructor (
             events.collect {
                 when(it) {
                     is QuizQuestionContract.QuizQuestionUiEvent.NextQuestion -> {
+                        // fetch image for the next next question
+                        val currQuestIndex = state.value.currentQuestionIndex
+                        if(currQuestIndex + 2 < state.value.questions.size) {
+                            viewModelScope.launch(Dispatchers.IO) {
+                                repository.fetchImagesForBreed(state.value.questions[currQuestIndex + 2])
+                            }
+                        }
+
                         setState { copy(showCorrectAnswer = true)}
                         delay(1000)
                         setState { copy(showCorrectAnswer = false)}
 
-                        val currentQuestion = state.value.questions[state.value.currentQuestionIndex]
+                        val currentQuestion = state.value.questions[currQuestIndex]
                         val correctAnswer = currentQuestion.correctAnswer
                         val selectedAnswer = it.selected
 
@@ -80,12 +90,17 @@ class QuizQuestionViewModel @Inject constructor (
         viewModelScope.launch {
             Log.d("IRINA", "Creating questions...")
 
-            setState { copy(creatingQuestions = true) }
-            val questions = repository.generateQuestions()
-            setState { copy(questions = questions, creatingQuestions = false) }
+            withContext(Dispatchers.IO) {
+                setState { copy(creatingQuestions = true) }
+                val questions = repository.generateQuestions()
+                repository.fetchImagesForBreed(questions[0])
+                repository.fetchImagesForBreed(questions[1])
+                setState { copy(questions = questions, creatingQuestions = false) }
+
+                Log.d("IRINA", "Questions created $questions")
+            }
 
             timer.start()
-            Log.d("IRINA", "Questions created $questions")
         }
     }
 
@@ -97,8 +112,7 @@ class QuizQuestionViewModel @Inject constructor (
         val TD = 300                                            // Time duration
         val TL = state.value.timeLeft.toInt()                   // Time left
 
-        // score = NCA * 2.5 * (1 + (TL + 120) / TD)
         val score = (NCA * 2.5 * (1 + (TL + 120) / TD)).coerceAtMost(100.0)
-        setState { copy(score = score.toInt()) }
+        setState { copy(score = score) }
     }
 }

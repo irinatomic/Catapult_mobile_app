@@ -377,33 +377,6 @@ fun QuizFinishedScreen(
     }
 }
 
-
-@Preview
-@Composable
-fun QuizQuestionScreenPreview() {
-    QuizQuestionScreen(
-        state = QuizQuestionState(
-            creatingQuestions = false,
-            questions = listOf(
-                Question(
-                    text = "Which temperament belongs to this breed?",
-                    breedImageUrl = "https://cdn2.thecatapi.com/images/IOqJ6RK7L.jpg",
-                    answers = listOf("affectionate", "loyal", "sensitive", "independent"),
-                    correctAnswer = "loyal"
-                )
-            ),
-            currentQuestionIndex = 0,
-            correctAnswers = 0,
-            timeLeft = 300L
-        ),
-        onNextQuestion = {},
-        publishResult = {},
-        restartQuiz = {},
-        discoverPage = {},
-        cancelQuiz = {}
-    )
-}
-
 @Preview
 @Composable
 fun QuizFinishedScreenPreview() {
@@ -414,7 +387,7 @@ fun QuizFinishedScreenPreview() {
             currentQuestionIndex = 0,
             correctAnswers = 3,
             timeLeft = 300L,
-            score = 80
+            score = 80.0
         ),
         publishResult = {},
         restartQuiz = {},

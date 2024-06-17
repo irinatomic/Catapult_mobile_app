@@ -1,19 +1,14 @@
 package com.example.catapult.navigation_drawer
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.*
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material.Text
+import androidx.compose.foundation.*
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.CoroutineScope
@@ -35,6 +30,33 @@ fun HamburgerMenu(
     }
 }
 
+
+@Composable
+fun AppDrawer(
+    navController: NavController,
+    drawerState: DrawerState,
+    scope: CoroutineScope,
+) {
+    Box(
+        Modifier
+            .fillMaxHeight()
+            .width(240.dp)
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        Column {
+            Text(
+                "Catapult",
+                modifier = Modifier.padding(16.dp),
+                color = MaterialTheme.colorScheme.primary
+            )
+            Divider()
+            DrawerMenu(navController = navController) {
+                scope.launch { drawerState.close() }
+            }
+        }
+    }
+}
+
 @Composable
 fun DrawerMenu(
     navController: NavController,
@@ -53,6 +75,7 @@ fun DrawerMenu(
                         navController.navigate(item.route)
                     }
                 },
+                icon = { DrawerItemIcon(iconResId = item.icon) },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -60,27 +83,10 @@ fun DrawerMenu(
 }
 
 @Composable
-fun AppDrawer(
-    navController: NavController,
-    drawerState: DrawerState,
-    scope: CoroutineScope,
-) {
-    Box(
-        Modifier
-            .fillMaxHeight()
-            .width(240.dp)
-            .background(MaterialTheme.colorScheme.background)
-    ) {
-        Column {
-            androidx.compose.material3.Text(
-                "Catapult",
-                modifier = Modifier.padding(16.dp),
-                color = MaterialTheme.colorScheme.primary
-            )
-            Divider()
-            DrawerMenu(navController = navController) {
-                scope.launch { drawerState.close() }
-            }
-        }
-    }
+fun DrawerItemIcon(iconResId: Int) {
+    Image(
+        painter = painterResource(id = iconResId),
+        contentDescription = null,
+        modifier = Modifier.size(20.dp)
+    )
 }

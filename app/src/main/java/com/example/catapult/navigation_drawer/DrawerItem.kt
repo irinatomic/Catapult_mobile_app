@@ -1,12 +1,18 @@
 package com.example.catapult.navigation_drawer
 
-sealed class DrawerItem(val route: String, val title: String) {
+import com.example.catapult.R
 
-    data object Discover : DrawerItem("breeds", "Discover")
-    data object StartQuiz : DrawerItem("quiz/start", "Start Quiz")
-    data object Leaderboard : DrawerItem("leaderboard", "Leaderboard")
+sealed class DrawerItem(
+    val route: String,
+    val title: String,
+    val icon: Int
+) {
 
-   // object Account : DrawerItem("account", "My Account")
+    data object Discover : DrawerItem("breeds", "Discover",  R.drawable.ic_discover)
+    data object StartQuiz : DrawerItem("quiz/start", "Start Quiz", R.drawable.ic_quiz)
+    data object Leaderboard : DrawerItem("leaderboard", "Leaderboard", R.drawable.ic_leaderboard)
+
+   // object Account : DrawerItem("account", "My Account", R.drawable.ic_account)
 
     companion object {
         val allItems = listOf(
