@@ -115,6 +115,9 @@ dependencies {
     implementation("androidx.compose.foundation:foundation-layout:1.3.1")
     implementation("androidx.compose.material:material-icons-extended:1.4.0")
 
+    // DataStore
+    implementation("androidx.datastore:datastore:1.1.1")
+
     // Hilt
     val hiltVersion = "2.51"
     implementation("com.google.dagger:hilt-android:$hiltVersion")

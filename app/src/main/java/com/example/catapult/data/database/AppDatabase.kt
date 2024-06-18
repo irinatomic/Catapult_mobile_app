@@ -7,18 +7,15 @@ import com.example.catapult.data.database.entities.*
 
 @Database(
     entities = [
-        UserDbModel :: class,
         BreedDbModel :: class,
         ImageDbModel :: class,
         ResultDbModel :: class,
         LBItemDbModel :: class
     ],
-    version = 4,
+    version = 5,
     exportSchema = true,
 )
 abstract class AppDatabase: RoomDatabase() {
-
-    abstract fun userDao(): UserDao
 
     abstract fun breedDao(): BreedDao
 

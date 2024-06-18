@@ -27,6 +27,7 @@ class QuizQuestionViewModel @Inject constructor (
     private fun setState(reducer: QuizQuestionContract.QuizQuestionState.() -> QuizQuestionContract.QuizQuestionState) = _state.getAndUpdate(reducer)
 
     private val events = MutableSharedFlow <QuizQuestionContract.QuizQuestionUiEvent>()
+
     fun setEvent(event: QuizQuestionContract.QuizQuestionUiEvent) {
         viewModelScope.launch {
             events.emit(event)

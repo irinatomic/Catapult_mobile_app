@@ -1,21 +1,31 @@
 import androidx.compose.runtime.*
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.catapult.navigation.NavigationViewModel
 import com.example.catapult.segments.breeds.gallery_screen.breedGalleryScreen
 import com.example.catapult.segments.breeds.images_screen.breedImagesScreen
 import com.example.catapult.segments.leaderboard.screen.leaderboardScreen
 import com.example.catapult.segments.quiz.question_screen.quizQuestionScreen
 import com.example.catapult.segments.quiz.start_screen.quizStartScreen
+import com.example.catapult.segments.user.register_screen.registerScreen
 
 @Composable
 fun AppNavigation() {
 
     val navController = rememberNavController()
+    val viewModel = hiltViewModel<NavigationViewModel>()
+    val state by viewModel.state.collectAsState()
+    val startDestination = if (state.hasAccount) "breeds" else "register"
 
 
-    NavHost(navController = navController, startDestination = "breeds") {
+    NavHost(navController = navController, startDestination = startDestination) {
+        registerScreen(
+            route = "register"
+        )
+
         breedsListScreen(
             route = "breeds",
             navController = navController,
