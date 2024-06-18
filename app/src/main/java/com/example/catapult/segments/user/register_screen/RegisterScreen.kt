@@ -54,25 +54,29 @@ fun RegisterScreen(
             LineTextField(
                 value = firstName,
                 onValueChange = { firstName = it },
-                label = "First Name"
+                label = "First Name",
+                regex = Regex("^[a-zA-Z]*$")        // only letters
             )
 
             LineTextField(
                 value = lastName,
                 onValueChange = { lastName = it },
-                label = "Last Name"
+                label = "Last Name",
+                regex = Regex("^[a-zA-Z]*$")        // only letters
             )
 
             LineTextField(
                 value = nickname,
                 onValueChange = { nickname = it },
-                label = "Nickname"
+                label = "Nickname",
+                regex = Regex("^[a-zA-Z0-9_]*$")    // only letters, numbers, and underscores
             )
 
             LineTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = "Email"
+                label = "Email",
+                regex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
             )
         }
 
@@ -94,14 +98,20 @@ fun LineTextField(
     value: TextFieldValue,
     onValueChange: (TextFieldValue) -> Unit,
     label: String,
+    regex: Regex,
 ) {
+    var isError by remember { mutableStateOf(false) }
+
     Column {
-        Text(text = label, style = TextStyle(fontSize = 16.sp, color = Color.Gray))
+        Text(text = label, style = TextStyle(fontSize = 16.sp, color = if (isError) Color.Red else Color.Gray))
         Spacer(modifier = Modifier.height(4.dp))
         BasicTextField(
             value = value,
-            onValueChange = onValueChange,
-            textStyle = TextStyle(fontSize = 18.sp, color = Color.Black),
+            onValueChange = {
+                onValueChange(it)
+                isError = !regex.matches(it.text)
+            },
+            textStyle = TextStyle(fontSize = 18.sp, color = if (isError) Color.Red else Color.Black),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)

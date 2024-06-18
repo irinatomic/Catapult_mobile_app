@@ -19,17 +19,15 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.catapult.R
 import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.text.style.TextAlign
 import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.Icon
@@ -46,8 +44,11 @@ fun NavGraphBuilder.quizQuestionScreen(
 
     QuizQuestionScreen(
         state = state,
-        onNextQuestion = { answer -> quizQuestionViewModel.setEvent(QuizQuestionUiEvent.NextQuestion(answer)) },
-        publishResult = { score -> },
+        onNextQuestion = { answer -> quizQuestionViewModel.setEvent(QuizQuestionEvent.NextQuestion(answer)) },
+        publishResult = {
+            score -> quizQuestionViewModel.setEvent(QuizQuestionEvent.SubmitResult(score))
+            navController.navigate("leaderboard")
+        },
         cancelQuiz = { navController.navigate("quiz/start")},
         restartQuiz = { navController.navigate("quiz/start") },
         discoverPage = { navController.navigate("breeds") }
@@ -59,7 +60,7 @@ fun NavGraphBuilder.quizQuestionScreen(
 fun QuizQuestionScreen(
     state: QuizQuestionState,
     onNextQuestion: (String) -> Unit,
-    publishResult: (Int) -> Unit,
+    publishResult: (Double) -> Unit,
     cancelQuiz: () -> Unit,
     restartQuiz: () -> Unit,
     discoverPage: () -> Unit
@@ -331,7 +332,7 @@ fun CreatingQuestionsScreen() {
 @Composable
 fun QuizFinishedScreen(
     state: QuizQuestionState,
-    publishResult: (Int) -> Unit,
+    publishResult: (Double) -> Unit,
     restartQuiz: () -> Unit,
     discoverPage: () -> Unit
 ) {
@@ -366,7 +367,7 @@ fun QuizFinishedScreen(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier.padding(bottom = 16.dp)
         ) {
-            Button(onClick = { publishResult(state.correctAnswers) }) { Text("Publish Result") }
+            Button(onClick = { publishResult(state.score) }) { Text("Publish Result") }
             Button(onClick = { restartQuiz() }) { Text("Restart Quiz") }
         }
 

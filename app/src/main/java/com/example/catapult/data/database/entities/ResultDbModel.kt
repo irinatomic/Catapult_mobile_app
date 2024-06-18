@@ -5,12 +5,12 @@ import androidx.room.PrimaryKey
 
 // This user's results in the game
 
-@Entity
+@Entity(tableName = "Results")
 data class ResultDbModel (
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
     val nickname: String,
-    val result: Float,
+    val result: Double,
     val createdAt: Long,
-    val published: Boolean
+    var published: Boolean = false
 )

@@ -34,6 +34,14 @@ class UserStore @Inject constructor(
         }
     }
 
+    suspend fun getUserData(): UserData {
+        return try {
+            persistence.data.first()
+        } catch (e: Exception) {
+            UserData()
+        }
+    }
+
     suspend fun setData(data: UserData) {
         try {
             persistence.updateData { data }

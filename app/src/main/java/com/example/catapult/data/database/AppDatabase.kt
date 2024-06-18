@@ -12,7 +12,7 @@ import com.example.catapult.data.database.entities.*
         ResultDbModel :: class,
         LBItemDbModel :: class
     ],
-    version = 5,
+    version = 7,
     exportSchema = true,
 )
 abstract class AppDatabase: RoomDatabase() {
@@ -21,7 +21,7 @@ abstract class AppDatabase: RoomDatabase() {
 
     abstract fun imageDao(): ImageDao
 
-    abstract fun resultDao(): ResultDao
+    abstract fun resultDao(): ResultDao     // locally stored results of user on this device
 
-    abstract fun leaderboardDao(): LBItemDao
+    abstract fun leaderboardDao(): LBItemDao    // globally stored results of all users
 }

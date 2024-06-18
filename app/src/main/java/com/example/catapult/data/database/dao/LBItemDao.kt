@@ -13,13 +13,13 @@ interface LBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(list: List<LBItemDbModel>)
 
-    @Query("SELECT * FROM LBItemDbModel ORDER BY result DESC")
+    @Query("SELECT * FROM Leaderboard ORDER BY result DESC")
     suspend fun getAll(): List<LBItemDbModel>
 
-    @Query("SELECT * FROM LBItemDbModel ORDER BY result DESC")
+    @Query("SELECT * FROM Leaderboard ORDER BY result DESC")
     fun observeAll(): Flow<List<LBItemDbModel>>
 
-    @Query("SELECT * FROM LBItemDbModel ORDER BY result DESC LIMIT 10")
+    @Query("SELECT * FROM Leaderboard ORDER BY result DESC LIMIT 10")
     suspend fun getTop10(): List<LBItemDbModel>
 
     suspend fun findUserPosition(nickname: String): Int {
@@ -28,6 +28,6 @@ interface LBItemDao {
         return allResults.indexOf(userResult)
     }
 
-    @Query("DELETE FROM LBItemDbModel")
+    @Query("DELETE FROM Leaderboard")
     suspend fun deleteAll()
 }

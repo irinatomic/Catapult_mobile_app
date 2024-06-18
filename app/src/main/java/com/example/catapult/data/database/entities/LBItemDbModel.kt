@@ -2,7 +2,10 @@ package com.example.catapult.data.database.entities
 
 import androidx.room.Entity
 
-@Entity(primaryKeys = ["nickname", "result", "createdAt"])
+@Entity(
+    tableName = "Leaderboard",
+    primaryKeys = ["nickname", "result", "createdAt"]
+)
 data class LBItemDbModel (
 
     val nickname: String,

@@ -15,6 +15,6 @@ interface LeaderboardApi {
 
     @POST("leaderboard")
     suspend fun postLeaderboard(
-        @Body leaderboard: LeaderboardApiModel
-    ): PostLeaderboardResponse
+        @Body leaderboard: SubmitResultRequest
+    ): SubmitResultResponse
 }

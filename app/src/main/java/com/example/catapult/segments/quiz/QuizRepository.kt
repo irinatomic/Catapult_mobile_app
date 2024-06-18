@@ -2,6 +2,8 @@ package com.example.catapult.segments.quiz
 
 import com.example.catapult.data.database.AppDatabase
 import com.example.catapult.data.database.entities.BreedDbModel
+import com.example.catapult.data.database.entities.ResultDbModel
+import com.example.catapult.data.datastore.UserStore
 import kotlinx.coroutines.*
 import kotlin.random.Random
 import com.example.catapult.data.mapper.asImageDbModel
@@ -10,8 +12,9 @@ import com.example.catapult.segments.quiz.question_screen.QuizQuestionContract.*
 import javax.inject.Inject
 
 class QuizRepository @Inject constructor(
+    private val breedsApi: BreedsApi,
     private val database: AppDatabase,
-    private val breedsApi: BreedsApi
+    private val store: UserStore
 ) {
 
     private var temperaments: List<String> = listOf()
@@ -48,6 +51,19 @@ class QuizRepository @Inject constructor(
          }
 
          q.breedImageUrl = images.random().url
+    }
+
+    suspend fun submitResultToDatabase(score: Double) {
+        withContext(Dispatchers.IO) {
+            database.resultDao().insert(
+                ResultDbModel(
+                    nickname = store.getUserData().nickname,
+                    result = score,
+                    createdAt = System.currentTimeMillis(),
+                    published = false
+                )
+            )
+        }
     }
 
     /**

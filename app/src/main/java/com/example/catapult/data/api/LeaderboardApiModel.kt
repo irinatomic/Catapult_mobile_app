@@ -3,7 +3,14 @@ package com.example.catapult.data.api
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class PostLeaderboardResponse(
+data class SubmitResultRequest(
+    val nickname: String,
+    val result: Double,
+    val category: Int
+)
+
+@Serializable
+data class SubmitResultResponse(
     val result: LeaderboardApiModel,
     val ranking: Int
 )

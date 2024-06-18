@@ -23,9 +23,10 @@ interface QuizQuestionContract {
         val score: Double = 0.0
     )
 
-    sealed class QuizQuestionUiEvent {
-        data class NextQuestion(val selected: String) : QuizQuestionUiEvent()
-        data object TimeUp: QuizQuestionUiEvent()
+    sealed class QuizQuestionEvent {
+        data class NextQuestion(val selected: String) : QuizQuestionEvent()
+        data object TimeUp: QuizQuestionEvent()
+        data class SubmitResult(val score: Double) : QuizQuestionEvent()
     }
 
 }

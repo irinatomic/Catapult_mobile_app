@@ -3,7 +3,7 @@ package com.example.catapult.data.database.entities
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
-@Entity
+@Entity(tableName = "Breeds")
 data class BreedDbModel(
 
     @PrimaryKey val id: String,
