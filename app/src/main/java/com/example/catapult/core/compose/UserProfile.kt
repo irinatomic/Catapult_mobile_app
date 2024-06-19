@@ -74,7 +74,7 @@ fun UserForm(
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
                 .align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(backgroundColor = MaterialTheme.colors.primary)
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
         ) { Text(text = buttonText) }
     }
 
@@ -91,7 +91,10 @@ fun LineTextField(
     var isError by remember { mutableStateOf(false) }
 
     Column {
-        Text(text = label, style = TextStyle(fontSize = 16.sp, color = if (isError) Color.Red else Color.Gray))
+        Text(text = label, style = TextStyle(
+            fontSize = 16.sp,
+            color = if (isError) Color.Red else MaterialTheme.colors.surface)
+        )
 
         Spacer(modifier = Modifier.height(4.dp))
 

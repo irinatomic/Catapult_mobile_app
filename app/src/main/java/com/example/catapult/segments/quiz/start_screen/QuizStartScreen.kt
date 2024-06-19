@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.*
+import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -65,7 +66,7 @@ fun QuizStartScreen (
                     Button(
                         onClick = onStartQuizClick,
                         modifier = Modifier.padding(16.dp), // Add padding here
-                        colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
+                        colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
                     ) { Text(text = "Start Quiz", color = Color.White) }
                 }
 

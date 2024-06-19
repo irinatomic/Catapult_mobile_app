@@ -6,7 +6,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -18,17 +17,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.data.ui.BreedUiModel
 import com.example.catapult.R
-import androidx.compose.foundation.Canvas
-
-@Composable
-fun FetchingData() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CircularProgressIndicator()
-    }
-}
 
 @Composable
 fun ErrorData(errorMessage: String) {
@@ -37,16 +25,6 @@ fun ErrorData(errorMessage: String) {
         contentAlignment = Alignment.Center,
     ) {
         Text(text = errorMessage)
-    }
-}
-
-@Composable
-fun NoData() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(text = stringResource(id = R.string.no_data))
     }
 }
 
@@ -153,30 +131,5 @@ fun BreedsPreviewCardImage(
             modifier = Modifier.fillMaxSize(),
             loading = { CircularProgressIndicator() }
         )
-    }
-}
-
-@Composable
-fun CustomVerticalScrollbar(
-    modifier: Modifier = Modifier,
-    scrollState: androidx.compose.foundation.ScrollState
-) {
-    val scrollbarWidth = 4.dp
-    val scrollbarColor = Color.Gray
-    val thumbHeight = remember { 20.dp }
-
-    Box(modifier = modifier) {
-        Canvas(modifier = Modifier
-            .fillMaxHeight()
-            .width(scrollbarWidth)) {
-            val totalHeight = size.height
-            val proportion = scrollState.maxValue.toFloat() / totalHeight
-            val offset = (scrollState.value / proportion).coerceIn(0f, totalHeight - thumbHeight.toPx())
-            drawRect(
-                color = scrollbarColor,
-                size = androidx.compose.ui.geometry.Size(scrollbarWidth.toPx(), thumbHeight.toPx()),
-                topLeft = androidx.compose.ui.geometry.Offset(0f, offset)
-            )
-        }
     }
 }

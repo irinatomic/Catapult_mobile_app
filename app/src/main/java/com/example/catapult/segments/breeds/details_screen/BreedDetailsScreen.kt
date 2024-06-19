@@ -3,6 +3,7 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
@@ -22,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NamedNavArgument
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.R
+import com.example.catapult.core.compose.NoDataScreen
 import com.example.catapult.segments.breeds.details_screen.BreedDetailsState
 import com.example.catapult.segments.breeds.details_screen.BreedDetailsViewModel
 
@@ -67,7 +69,7 @@ fun BreedDetailsScreen (
             // CONTENT
             BreedDetails(
                 state = state,
-                paddingValues = PaddingValues(), // Adjust as necessary
+                paddingValues = PaddingValues(),
                 onMoreImagesClick = onMoreImagesClick
             )
 
@@ -77,7 +79,7 @@ fun BreedDetailsScreen (
                 when {
                     state.error is BreedDetailsState.DetailsError.DataUpdateFailed ->
                         ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
-                    else -> NoData()
+                    else -> NoDataScreen()
                 }
             }
         }
@@ -111,7 +113,7 @@ private fun BreedDetails(
             ) {
                 Text(
                     text = "${stringResource(id = R.string.breed_name)}: ${info.name}",
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.h5,
                     modifier = Modifier
                         .padding(8.dp)
                         .weight(1f)
@@ -119,7 +121,8 @@ private fun BreedDetails(
 
                 Button(
                     onClick = onMoreImagesClick,
-                    modifier = Modifier.padding(8.dp)
+                    modifier = Modifier.padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
                 ) { Text(text = "More images") }
             }
 
@@ -263,6 +266,7 @@ private fun WikipediaButton(
                 Toast.makeText(context, "No browser found on device", Toast.LENGTH_SHORT).show()
             }
         },
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+        colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
     ) { Text(stringResource(id = R.string.wikipedia)) }
 }

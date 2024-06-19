@@ -8,12 +8,12 @@ import com.example.catapult.navigation.NavigationViewModel
 import com.example.catapult.segments.breeds.gallery_screen.breedGalleryScreen
 import com.example.catapult.segments.breeds.images_screen.breedImagesScreen
 import com.example.catapult.segments.leaderboard.screen.leaderboardScreen
-import com.example.catapult.segments.loading.appLoadingScreen
 import com.example.catapult.segments.quiz.question_screen.quizQuestionScreen
 import com.example.catapult.segments.quiz.start_screen.quizStartScreen
 import com.example.catapult.segments.user.profile_edit_screen.profileEditScreen
 import com.example.catapult.segments.user.profile_screen.profileScreen
 import com.example.catapult.segments.user.register_screen.registerScreen
+import com.example.catapult.segments.welcome.welcomeScreen
 
 @Composable
 fun AppNavigation() {
@@ -23,15 +23,15 @@ fun AppNavigation() {
     val state by viewModel.state.collectAsState()
 
     val startDestination = when {
-        state.isLoading -> "loading-screen"
+        state.isLoading -> "welcome"
         state.hasAccount -> "breeds"
         else -> "register"
     }
 
     NavHost(navController = navController, startDestination = startDestination) {
 
-        appLoadingScreen(
-            route = "loading-screen"
+        welcomeScreen(
+            route = "welcome"
         )
 
         registerScreen(

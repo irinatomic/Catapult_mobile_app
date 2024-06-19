@@ -17,6 +17,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.catapult.R
+import com.example.catapult.core.compose.LoadingScreen
+import com.example.catapult.core.compose.NoDataScreen
 import com.example.catapult.data.ui.BreedUiModel
 import com.example.catapult.navigation_drawer.AppDrawer
 import com.example.catapult.navigation_drawer.HamburgerMenu
@@ -93,10 +95,10 @@ fun BreedsListScreen(
 
                     if (state.breeds.isEmpty()) {
                         when {
-                            state.fetching -> FetchingData()
+                            state.fetching -> LoadingScreen()
                             state.error is BreedsListState.ListError.ListUpdateFailed ->
                                 ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
-                            else -> NoData()
+                            else -> NoDataScreen()
                         }
                     }
                 }

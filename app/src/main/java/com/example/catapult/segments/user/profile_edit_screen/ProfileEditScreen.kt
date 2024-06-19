@@ -14,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.catapult.R
+import com.example.catapult.core.compose.LoadingScreen
 import com.example.catapult.core.compose.UserForm
 import com.example.catapult.data.datastore.UserData
 import com.example.catapult.segments.user.profile_edit_screen.ProfileEditContract.*
@@ -58,7 +59,7 @@ fun ProfileEditScreen(
 
             // CONTENT
             if (state.fetchingData) {
-                Text("Loading...")
+                LoadingScreen()
             } else {
                 // Mutable state variables
                 var firstName by remember { mutableStateOf(TextFieldValue(state.userData.firstName)) }

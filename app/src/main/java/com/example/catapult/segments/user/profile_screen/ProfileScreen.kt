@@ -19,6 +19,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import com.example.catapult.R
+import com.example.catapult.core.compose.LoadingScreen
 import com.example.catapult.segments.user.profile_screen.ProfileContract.*
 import com.example.catapult.data.database.entities.ResultDbModel
 import com.example.catapult.data.datastore.UserData
@@ -74,7 +75,7 @@ fun ProfileScreen(
                         .padding(horizontal = 42.dp, vertical = 16.dp)
                 ) {
                     if (state.fetchingData) {
-                        Text("Loading...")
+                        LoadingScreen()
                     } else {
                         Column {
                             UserInfo(user = state.userData)

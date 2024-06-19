@@ -157,14 +157,16 @@ fun ShowQuestionScreen(
                     answer = ""
                 },
                 enabled = answer.isNotEmpty(),
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
             ) { Text("Next Question") }
 
             Spacer(modifier = Modifier.fillMaxHeight(0.08F))
 
             Button(
                 onClick = { showCancelDialog = true },
-                modifier = Modifier.align(Alignment.CenterHorizontally)
+                modifier = Modifier.align(Alignment.CenterHorizontally),
+                colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
             ) { Text("Cancel Quiz") }
         }
     }
@@ -203,9 +205,7 @@ fun ShowOfferedAnswers(
     Column {
         question.answers.chunked(2).forEach { rowAnswers ->
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 8.dp),
+                modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 rowAnswers.forEach { ans ->
@@ -224,13 +224,12 @@ fun ShowOfferedAnswers(
                                 },
                                 shape = RoundedCornerShape(4.dp)
                             ),
-                        elevation = 4.dp
+                        elevation = 4.dp,
+                        backgroundColor = MaterialTheme.colors.surface
                     ) {
                         Text(
                             text = ans,
-                            modifier = Modifier
-                                .padding(16.dp)
-                                .fillMaxWidth(),
+                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
                             color = MaterialTheme.colors.onSurface,
                             fontWeight = FontWeight.SemiBold
                         )
