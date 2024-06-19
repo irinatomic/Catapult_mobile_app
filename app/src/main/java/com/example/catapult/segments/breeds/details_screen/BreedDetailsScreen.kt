@@ -5,8 +5,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -54,8 +52,9 @@ fun BreedDetailsScreen (
     onBack: () -> Unit,
     onMoreImagesClick: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
+    Surface {
+        Column {
+            // TOP BAR
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -64,28 +63,26 @@ fun BreedDetailsScreen (
                 },
                 title = { Text(stringResource(id = R.string.breed_details)) }
             )
-        },
 
-        content = {
+            // CONTENT
             BreedDetails(
                 state = state,
-                paddingValues = it,
+                paddingValues = PaddingValues(), // Adjust as necessary
                 onMoreImagesClick = onMoreImagesClick
             )
 
             Log.d("IRINA", "BreedDetailsScreen: ${state.breedId}")
 
-            if(state.breedUi == null) {
+            if (state.breedUi == null) {
                 when {
                     state.error is BreedDetailsState.DetailsError.DataUpdateFailed ->
                         ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
                     else -> NoData()
                 }
             }
-        },
+        }
+    }
 
-        // NO BOTTOM BAR
-    )
 }
 
 @Composable

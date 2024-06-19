@@ -5,8 +5,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,6 +40,7 @@ fun NavGraphBuilder.breedsListScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreedsListScreen(
     state: BreedsListState,
@@ -63,10 +62,9 @@ fun BreedsListScreen(
             )
         }
     ) {
-        Scaffold (
-
-            // TOP BAR
-            topBar = {
+        Surface {
+            Column {
+                // TOP BAR
                 if (!state.searchActive) {
                     TopAppBar(
                         title = { Text(stringResource(id = R.string.app_name)) },
@@ -78,10 +76,8 @@ fun BreedsListScreen(
                         }
                     )
                 }
-            },
 
-            // CONTENT
-            content = {
+                // CONTENT
                 if (state.searchActive) {
                     SearchMode(
                         state = state,
@@ -91,7 +87,7 @@ fun BreedsListScreen(
                 } else {
                     BreedsList(
                         items = state.breeds,
-                        paddingValues = it,
+                        paddingValues = PaddingValues(), // Adjust as necessary
                         onItemClick = onItemClick,
                     )
 
@@ -104,10 +100,9 @@ fun BreedsListScreen(
                         }
                     }
                 }
-            },
+            }
+        }
 
-            // NO BOTTOM BAR
-        )
     }
 }
 

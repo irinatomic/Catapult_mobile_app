@@ -1,11 +1,13 @@
 package com.example.catapult.segments.user.register_screen
 
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import com.example.catapult.segments.user.register_screen.RegisterContract.*
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -24,6 +26,7 @@ fun NavGraphBuilder.registerScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     onRegister: (String, String, String, String) -> Unit
@@ -33,13 +36,14 @@ fun RegisterScreen(
     var nickname by remember { mutableStateOf(TextFieldValue("")) }
     var email by remember { mutableStateOf(TextFieldValue("")) }
 
-    Scaffold(
-        topBar = {
+    Surface {
+        Column {
+            // TOP BAR
             TopAppBar(
                 title = { Text("Register") }
             )
-        },
-        content = { paddingValues ->
+
+            // CONTENT
             UserForm(
                 firstName = firstName,
                 onFirstNameChange = { firstName = it },
@@ -51,10 +55,11 @@ fun RegisterScreen(
                 onEmailChange = { email = it },
                 buttonText = "Register",
                 onClick = { onRegister(firstName.text, lastName.text, nickname.text, email.text) },
-                paddingValues = paddingValues
+                paddingValues = PaddingValues()
             )
         }
-    )
+    }
+
 }
 
 @Preview

@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -63,41 +61,44 @@ fun BreedGalleryScreen(
         }
     }
 
-    Scaffold(
-        modifier = Modifier.fillMaxSize(),
-        topBar = {
-            TopAppBar(title = {},
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column {
+            // TOP BAR
+            TopAppBar(
+                title = {},
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
-                })
-        },
+                }
+            )
 
-        content = { paddingValues ->
-            if (state.images.isNotEmpty()) {
-                HorizontalPager(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = paddingValues,
-                    pageSize = PageSize.Fill,
-                    pageSpacing = 16.dp,
-                    state = pagerState,
-                    key = { state.images[it].id }
-                ) { pageIndex ->
-                    val image = state.images[pageIndex]
-                    ImagePreview(
-                        modifier = Modifier,
-                        image = image,
+            // CONTENT
+            Box(modifier = Modifier.weight(1f)) {
+                if (state.images.isNotEmpty()) {
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxSize(),
+                        pageSize = PageSize.Fill,
+                        pageSpacing = 16.dp,
+                        state = pagerState,
+                        key = { state.images[it].id }
+                    ) { pageIndex ->
+                        val image = state.images[pageIndex]
+                        ImagePreview(
+                            modifier = Modifier,
+                            image = image,
+                        )
+                    }
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxSize(),
+                        text = "No images.",
                     )
                 }
-            } else {
-                Text(
-                    modifier = Modifier.fillMaxSize(),
-                    text = "No images.",
-                )
             }
-        },
-    )
+        }
+    }
+
 }
 
 @Composable

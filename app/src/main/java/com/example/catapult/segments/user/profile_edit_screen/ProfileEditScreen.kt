@@ -1,13 +1,11 @@
 package com.example.catapult.segments.user.profile_edit_screen
 
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -38,6 +36,7 @@ fun NavGraphBuilder.profileEditScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileEditScreen(
     state: ProfileEditState,
@@ -45,8 +44,9 @@ fun ProfileEditScreen(
     onSave: (String, String, String, String) -> Unit,
 ) {
 
-    Scaffold(
-        topBar = {
+    Surface {
+        Column {
+            // TOP BAR
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
@@ -55,15 +55,12 @@ fun ProfileEditScreen(
                 },
                 title = { Text("Edit Profile") }
             )
-        },
 
-        content = { paddingValues ->
-
-            if (state.fetchingData)
-                Text("Loading...", modifier = Modifier.padding(paddingValues))
-            else {
-
-                // mutableStateOf is a Composable function that creates a state object that can be read and modified
+            // CONTENT
+            if (state.fetchingData) {
+                Text("Loading...")
+            } else {
+                // Mutable state variables
                 var firstName by remember { mutableStateOf(TextFieldValue(state.userData.firstName)) }
                 var lastName by remember { mutableStateOf(TextFieldValue(state.userData.lastName)) }
                 var nickname by remember { mutableStateOf(TextFieldValue(state.userData.nickname)) }
@@ -78,14 +75,13 @@ fun ProfileEditScreen(
                     onNicknameChange = { nickname = it },
                     email = email,
                     onEmailChange = { email = it },
-
                     buttonText = "Edit Profile",
                     onClick = { onSave(firstName.text, lastName.text, nickname.text, email.text) },
-                    paddingValues = paddingValues
+                    paddingValues = PaddingValues()
                 )
             }
         }
-    )
+    }
 }
 
 @Preview

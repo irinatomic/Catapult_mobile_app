@@ -29,7 +29,7 @@ interface LBItemDao {
         val allResults = getAll()
         val userResult = allResults.find { it.nickname == nickname }
 
-        val rank = allResults.indexOf(userResult)
+        val rank = allResults.indexOf(userResult) + 1
         val score = userResult?.result ?: -1.0
         return Pair(rank, score)
     }

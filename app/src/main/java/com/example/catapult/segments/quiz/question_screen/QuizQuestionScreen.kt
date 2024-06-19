@@ -68,27 +68,22 @@ fun QuizQuestionScreen(
 
     BackHandler(onBack = { /* Disabled */ })
 
-    Scaffold (
-        content = {
-            if(state.creatingQuestions)
-                CreatingQuestionsScreen()
-            else if(state.quizFinished)
-                QuizFinishedScreen(
-                    state = state,
-                    publishResult = publishResult,
-                    restartQuiz = restartQuiz,
-                    discoverPage = discoverPage
-                )
-            else {
-                ShowQuestionScreen(
-                    state = state,
-                    showCorrectAnswer = state.showCorrectAnswer,
-                    onNextQuestion = onNextQuestion,
-                    cancelQuiz = cancelQuiz
-                )
-            }
-        }
-    )
+    when {
+        state.creatingQuestions -> CreatingQuestionsScreen()
+        state.quizFinished -> QuizFinishedScreen(
+            state = state,
+            publishResult = publishResult,
+            restartQuiz = restartQuiz,
+            discoverPage = discoverPage
+        )
+        else -> ShowQuestionScreen(
+            state = state,
+            showCorrectAnswer = state.showCorrectAnswer,
+            onNextQuestion = onNextQuestion,
+            cancelQuiz = cancelQuiz
+        )
+    }
+
 }
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
@@ -104,79 +99,96 @@ fun ShowQuestionScreen(
     var showCancelDialog by remember { mutableStateOf(false) }
 
     if (showCancelDialog) {
-        AlertDialog(
-            onDismissRequest = { showCancelDialog = false },
-            title = { Text("Are you sure you want to give up?") },
-            confirmButton = {
-                Button(onClick = {
-                    showCancelDialog = false
-                    cancelQuiz()
-                }) {
-                    Text("Yes")
-                }
-            },
-            dismissButton = {
-                Button(onClick = { showCancelDialog = false }) {
-                    Text("Cancel")
-                }
-            }
+        ConfirmCancelQuizDialog(
+            onConfirm = { cancelQuiz() },
+            onDismiss = { showCancelDialog = false }
         )
     }
 
-    Column(
-        modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+    Surface(
+        modifier = Modifier.fillMaxSize(),
     ) {
-        QuizSessionInfo(state = state)
-
-        CountdownTimer(timeLeft = state.timeLeft, modifier = Modifier.align(Alignment.CenterHorizontally))
-
-        Spacer(modifier = Modifier.fillMaxHeight(0.08F))
-
-        BoxWithConstraints(
-            modifier = Modifier
-                .size(250.dp)
-                .align(Alignment.CenterHorizontally)
+        Column(
+            modifier = Modifier.statusBarsPadding().padding(start = 16.dp, end = 16.dp)
         ) {
-            SubcomposeAsyncImage(
-                model = question.breedImageUrl,
-                loading = { Text("Loading...") },
-                error = { Text("Image loading failed") },
-                contentDescription = "Breed Image",
-                modifier = Modifier.fillMaxSize(),
+            QuizSessionInfo(state = state)
+
+            CountdownTimer(
+                timeLeft = state.timeLeft,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
             )
+
+            Spacer(modifier = Modifier.fillMaxHeight(0.08F))
+
+            BoxWithConstraints(
+                modifier = Modifier
+                    .size(250.dp)
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                SubcomposeAsyncImage(
+                    model = question.breedImageUrl,
+                    loading = { Text("Loading...") },
+                    error = { Text("Image loading failed") },
+                    contentDescription = "Breed Image",
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+
+            Text(
+                text = question.text, fontSize = 18.sp, modifier = Modifier
+                    .padding(top = 10.dp)
+                    .align(Alignment.CenterHorizontally)
+            )
+
+            Spacer(modifier = Modifier.fillMaxHeight(0.05F))
+
+            ShowOfferedAnswers(
+                question = question,
+                selectedAnswer = answer,
+                onAnswerSelected = { selected -> answer = selected },
+                showCorrectAnswer = showCorrectAnswer
+            )
+
+            Spacer(modifier = Modifier.fillMaxHeight(0.16F))
+
+            Button(
+                onClick = {
+                    onNextQuestion(answer)
+                    answer = ""
+                },
+                enabled = answer.isNotEmpty(),
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) { Text("Next Question") }
+
+            Spacer(modifier = Modifier.fillMaxHeight(0.08F))
+
+            Button(
+                onClick = { showCancelDialog = true },
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            ) { Text("Cancel Quiz") }
         }
-
-        Text(text = question.text, fontSize = 18.sp, modifier = Modifier
-            .padding(top = 10.dp)
-            .align(Alignment.CenterHorizontally))
-
-        Spacer(modifier = Modifier.fillMaxHeight(0.05F))
-
-        ShowOfferedAnswers(
-            question = question,
-            selectedAnswer = answer,
-            onAnswerSelected = { selected -> answer = selected },
-            showCorrectAnswer = showCorrectAnswer
-        )
-
-        Spacer(modifier = Modifier.fillMaxHeight(0.16F))
-
-        Button(
-            onClick = {
-                onNextQuestion(answer)
-                answer = ""
-            },
-            enabled = answer.isNotEmpty(),
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) { Text("Next Question") }
-
-        Spacer(modifier = Modifier.fillMaxHeight(0.08F))
-
-        Button(
-            onClick = { showCancelDialog = true },
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        ) { Text("Cancel Quiz") }
     }
+}
+
+@Composable
+fun ConfirmCancelQuizDialog(
+    onConfirm: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Are you sure you want to give up?") },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text("Yes")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 @Composable
@@ -191,7 +203,9 @@ fun ShowOfferedAnswers(
     Column {
         question.answers.chunked(2).forEach { rowAnswers ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 rowAnswers.forEach { ans ->
@@ -214,7 +228,9 @@ fun ShowOfferedAnswers(
                     ) {
                         Text(
                             text = ans,
-                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
                             color = MaterialTheme.colors.onSurface,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -310,16 +326,22 @@ fun CreatingQuestionsScreen() {
 
     val randomText = randomTexts.random()
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
+    Surface(
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
             Image(
-                painter = painterResource(id = R.drawable.loading_image),
+                painter = painterResource(id = R.drawable.ic_quiz_start),
                 contentDescription = "Loading image",
-                modifier = Modifier.size(200.dp)
+                modifier = Modifier.size(250.dp)
             )
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = randomText,
                 textAlign = TextAlign.Center,
@@ -336,45 +358,49 @@ fun QuizFinishedScreen(
     restartQuiz: () -> Unit,
     discoverPage: () -> Unit
 ) {
-    Column(
+    Surface (
         modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.fillMaxHeight(0.1F))
-
-        Text(
-            text = "Quiz Finished!",
-            style = MaterialTheme.typography.h4,
-            modifier = Modifier.padding(bottom = 16.dp)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.quiz_finished),
-            contentDescription = "Quiz finished image",
-            modifier = Modifier.size(200.dp)
-        )
-        Text(
-            text = "Correct answers: ${state.correctAnswers}",
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
-        )
-        Text(
-            text = "Score: ${state.score}",
-            style = MaterialTheme.typography.h6,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(bottom = 16.dp)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { publishResult(state.score) }) { Text("Publish Result") }
-            Button(onClick = { restartQuiz() }) { Text("Restart Quiz") }
-        }
+            Spacer(modifier = Modifier.fillMaxHeight(0.1F))
 
-        Button(
-            onClick = { discoverPage() },
-            modifier = Modifier.padding(bottom = 16.dp)
-        ) { Text("Discover More Breeds") }
+            Text(
+                text = "Quiz Finished!",
+                style = MaterialTheme.typography.h4,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+            Image(
+                painter = painterResource(id = R.drawable.ic_quiz_finished),
+                contentDescription = "Quiz finished image",
+                modifier = Modifier.size(200.dp)
+            )
+            Text(
+                text = "Correct answers: ${state.correctAnswers}",
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
+            )
+            Text(
+                text = "Score: ${state.score}",
+                style = MaterialTheme.typography.h6,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) {
+                Button(onClick = { publishResult(state.score) }) { Text("Publish Result") }
+                Button(onClick = { restartQuiz() }) { Text("Restart Quiz") }
+            }
+
+            Button(
+                onClick = { discoverPage() },
+                modifier = Modifier.padding(bottom = 16.dp)
+            ) { Text("Discover More Breeds") }
+        }
     }
 }
 

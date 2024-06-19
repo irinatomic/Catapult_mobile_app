@@ -3,8 +3,6 @@ package com.example.catapult.segments.leaderboard.screen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -67,33 +64,20 @@ fun LeaderboardScreen(
                 scope = scope)
         }
     ) {
-        Scaffold(
-            // TOP BAR
-            topBar = {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column {
+                // TOP BAR
                 TopAppBar(
                     title = { Text(stringResource(id = R.string.app_name)) },
-                    navigationIcon = { IconButton(onClick = onBack) { HamburgerMenu(drawerState) } },
+                    navigationIcon = {
+                        IconButton(onClick = onBack) {
+                            HamburgerMenu(drawerState)
+                        }
+                    }
                 )
-            },
 
-            // CONTENT
-            content = {paddingValues ->
-
-                val startPadding = paddingValues.calculateStartPadding(LayoutDirection.Ltr) + 16.dp
-                val topPadding = paddingValues.calculateTopPadding()
-                val endPadding = paddingValues.calculateEndPadding(LayoutDirection.Ltr) + 16.dp
-                val bottomPadding = paddingValues.calculateBottomPadding()
-
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        start = startPadding,
-                        top = topPadding,
-                        end = endPadding,
-                        bottom = bottomPadding
-                    )
-                )
-                {
+                // CONTENT
+                Box(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp)) {
                     when {
                         state.fetching -> {
                             // Display a loading indicator while fetching data
@@ -104,7 +88,9 @@ fun LeaderboardScreen(
                                 is LeaderboardState.ListError.ListUpdateFailed -> {
                                     Text(text = "Error: ${error.cause?.message}", Modifier.align(Alignment.Center))
                                 }
-                                else -> { Log.d("IRINA", error.toString()) }
+                                else -> {
+                                    Log.d("IRINA", error.toString())
+                                }
                             }
                         }
                         else -> {
@@ -112,8 +98,9 @@ fun LeaderboardScreen(
                         }
                     }
                 }
-            },
-        )
+            }
+        }
+
     }
 }
 

@@ -75,7 +75,7 @@ class QuizRepository @Inject constructor(
 
         val allBreeds = database.breedDao().getAll()
         val answers = allBreeds.filter { it != breed }.shuffled().take(3).map { it.name.lowercase() } + breed.name.lowercase()
-        return Question("Which breed is this?", breed.id, "", answers, breed.name.lowercase())
+        return Question("Which breed is this?", breed.id, "", answers.shuffled(), breed.name.lowercase())
     }
 
     /**
@@ -85,11 +85,15 @@ class QuizRepository @Inject constructor(
     private suspend fun generateTypeTwo(): Question {
         val breed = chooseRandomBreed()       //  correct answer
 
-        val correctTemperament = breed.temperament.split(",").map { it.lowercase() }.random().trim()
-        val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
-        val falseTemperament = wrongTemperaments.random()
-        val answers = wrongTemperaments + correctTemperament
-        return Question("Which temperament does not belong to this breed?", breed.id, "", answers.shuffled(), falseTemperament)
+        val breedTemperaments = breed.temperament.split(",").map { it.trim().lowercase() }
+        val allTemperaments = fetchTemperaments().map { it.trim().lowercase() }
+
+        // wrongTemperaments = allTemperaments - breedTemperaments
+        val wrongTemperaments = allTemperaments.filter { it !in breedTemperaments }.shuffled()
+        val correctAnswer = wrongTemperaments.random()
+
+        val answers = breedTemperaments.take(3) + correctAnswer
+        return Question("Which temperament does not belong to this breed?", breed.id, "", answers.shuffled(), correctAnswer)
     }
 
     /**
@@ -97,13 +101,19 @@ class QuizRepository @Inject constructor(
      * Shows an image of a random breed and 4 possible answers.
      */
     private suspend fun generateTypeThree(): Question {
-        val breed = chooseRandomBreed()       //  correct answer
+        val breed = chooseRandomBreed()     //  correct answer
 
-        val correctTemperament = breed.temperament.split(",").map { it.lowercase() }.random().trim()
-        val wrongTemperaments = fetchTemperaments().filter { it != correctTemperament }.shuffled().take(3)
-        val answers = wrongTemperaments + correctTemperament
-        return Question("Which temperament belongs to this breed?", breed.id, "", answers.shuffled(), correctTemperament)
+        val breedTemperaments = breed.temperament.split(",").map { it.trim().lowercase() }
+        val allTemperaments = fetchTemperaments().map { it.trim().lowercase() }
+
+        // wrongTemperaments = allTemperaments - breedTemperaments
+        val wrongTemperaments = allTemperaments.filter { it !in breedTemperaments }.shuffled().take(3)
+        val correctAnswer = breedTemperaments.random()
+
+        val answers = wrongTemperaments + correctAnswer
+        return Question("Which temperament belongs to this breed?", breed.id, "", answers.shuffled(), correctAnswer)
     }
+
 
     private suspend fun chooseRandomBreed(): BreedDbModel {
         val excludedIds = listOf("mala")

@@ -5,8 +5,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -61,30 +59,27 @@ fun ProfileScreen(
             )
         }
     ) {
-        Scaffold (
-            // TOP BAR
-            topBar = {
+        Surface(modifier = Modifier.fillMaxSize()) {
+            Column {
+                // TOP BAR
                 TopAppBar(
                     title = { Text(stringResource(id = R.string.app_name)) },
-                    navigationIcon = { HamburgerMenu(drawerState) },
+                    navigationIcon = { HamburgerMenu(drawerState) }
                 )
-            },
 
-            // CONTENT
-            content = { paddingValues ->
-                Surface(modifier = Modifier.fillMaxSize().padding(horizontal = 42.dp, vertical = 16.dp)
+                // CONTENT
+                Surface(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 42.dp, vertical = 16.dp)
                 ) {
-                    if (state.fetchingData)
-                        Text("Loading...", modifier = Modifier.padding(paddingValues))
-                    else {
+                    if (state.fetchingData) {
+                        Text("Loading...")
+                    } else {
                         Column {
-                            Column(
-                                modifier = Modifier.padding(paddingValues),
-                            ) {
-                                UserInfo(user = state.userData)
-                                BestGlobalRank(bestGlobalRank = state.bestGlobalRank)
-                                QuizHistorySegment(quizResults = state.quizResults)
-                            }
+                            UserInfo(user = state.userData)
+                            BestGlobalRank(bestGlobalRank = state.bestGlobalRank)
+                            QuizHistorySegment(quizResults = state.quizResults)
 
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
@@ -99,10 +94,11 @@ fun ProfileScreen(
                         }
                     }
                 }
-            }
-        )
-    }
 
+                // NO BOTTOM BAR
+            }
+        }
+    }
 }
 
 @Composable

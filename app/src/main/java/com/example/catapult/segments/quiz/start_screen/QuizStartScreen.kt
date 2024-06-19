@@ -1,11 +1,9 @@
 package com.example.catapult.segments.quiz.start_screen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -32,7 +30,6 @@ fun NavGraphBuilder.quizStartScreen(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizStartScreen (
@@ -52,29 +49,28 @@ fun QuizStartScreen (
             )
         }
     ) {
-        Scaffold (
-            // TOP BAR
-            topBar = {
+        Surface {
+            Column {
+                // TOP BAR
                 TopAppBar(
                     title = { Text(stringResource(id = R.string.app_name)) },
-                    navigationIcon = { HamburgerMenu(drawerState) },
+                    navigationIcon = { HamburgerMenu(drawerState) }
                 )
-            },
 
-            // CONTENT
-            content = {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                // CONTENT
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
                     Button(
                         onClick = onStartQuizClick,
                         modifier = Modifier.padding(16.dp), // Add padding here
                         colors = ButtonDefaults.buttonColors(MaterialTheme.colorScheme.primary)
-                    ) {
-                        Text(text = "Start Quiz", color = Color.White)
-                    }
+                    ) { Text(text = "Start Quiz", color = Color.White) }
                 }
-            }
 
-            // NO BOTTOM BAR
-        )
+                // NO BOTTOM BAR
+            }
+        }
     }
 }

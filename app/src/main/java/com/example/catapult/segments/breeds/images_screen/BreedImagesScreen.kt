@@ -10,8 +10,6 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.TopAppBar
-import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -56,23 +54,21 @@ fun BreedImagesScreen(
     onImageClick: (breedId: String) -> Unit,
     onBack: () -> Unit,
 ) {
-    Scaffold(
-        topBar = {
+    Surface {
+        Column {
+            // TOP BAR
             TopAppBar(
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(
-                            Icons.Filled.ArrowBack,
-                            contentDescription = stringResource(id = R.string.back)
-                        )
+                        Icon(Icons.Filled.ArrowBack, contentDescription = stringResource(id = R.string.back))
                     }
                 },
                 title = { Text("Images for breed") }
             )
-        },
-        content = { paddingValues ->
+
+            // CONTENT
             BoxWithConstraints(
-                modifier = Modifier,
+                modifier = Modifier.weight(1f),                 // To take remaining space after TopAppBar
                 contentAlignment = Alignment.BottomCenter,
             ) {
                 val screenWidth = this.maxWidth
@@ -83,7 +79,7 @@ fun BreedImagesScreen(
                         .fillMaxSize()
                         .padding(horizontal = 4.dp),
                     columns = StaggeredGridCells.Fixed(2),
-                    contentPadding = paddingValues,
+                    contentPadding = PaddingValues(), // Adjust as necessary
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     itemsIndexed(
@@ -98,7 +94,7 @@ fun BreedImagesScreen(
                                 .width(cellSize)
                                 .height(imageHeightDp)
                                 .clickable { onImageClick(image.id) },
-                            ) {
+                        ) {
                             SubcomposeAsyncImage(
                                 modifier = Modifier.fillMaxSize(),
                                 model = image.url,
@@ -107,11 +103,9 @@ fun BreedImagesScreen(
                             )
                         }
                     }
-
                 }
             }
         }
-    )
+    }
+
 }
-
-
