@@ -9,7 +9,7 @@ import androidx.room.Entity
 data class LBItemDbModel (
 
     val nickname: String,
-    val result: Float,
+    val result: Double,
     val totalGamesPlayed: Int,
     val createdAt: Long
 )

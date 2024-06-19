@@ -12,7 +12,7 @@ import com.example.catapult.data.database.entities.*
         ResultDbModel :: class,
         LBItemDbModel :: class
     ],
-    version = 7,
+    version = 2,
     exportSchema = true,
 )
 abstract class AppDatabase: RoomDatabase() {

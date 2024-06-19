@@ -4,5 +4,6 @@ interface NavigationContract {
 
     data class NavigationState(
         val hasAccount: Boolean = false,
+        val isLoading: Boolean = true,
     )
 }

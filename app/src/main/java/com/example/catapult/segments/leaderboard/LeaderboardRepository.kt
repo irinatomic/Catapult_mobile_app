@@ -18,9 +18,11 @@ class LeaderboardRepository @Inject constructor(
 ){
 
     suspend fun fetchLeaderboard(categoryId: Int = 1) {
-        val lbItems = leaderboardApi.getLeaderboard(categoryId)
-        database.leaderboardDao().deleteAll()
-        database.leaderboardDao().insertAll(lbItems.map { it.asLBItemDbModel(lbItems) })
+        withContext(Dispatchers.IO) {
+            val lbItems = leaderboardApi.getLeaderboard(categoryId)
+            database.leaderboardDao().deleteAll()
+            database.leaderboardDao().insertAll(lbItems.map { it.asLBItemDbModel(lbItems) })
+        }
     }
 
     /**

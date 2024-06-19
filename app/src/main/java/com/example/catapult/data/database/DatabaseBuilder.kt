@@ -13,7 +13,7 @@ class DatabaseBuilder @Inject constructor(
         return Room.databaseBuilder(
             context = context,
             klass = AppDatabase::class.java,
-            name = "rma.db",
+            name = "catapult.db",
         )
             .fallbackToDestructiveMigration()
             .build()

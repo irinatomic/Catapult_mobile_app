@@ -3,6 +3,8 @@ package com.example.catapult.segments.leaderboard.screen
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.background
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -198,31 +200,31 @@ fun LeaderboardScreenPreview() {
                 LBItemUiModel(
                     ranking = 1,
                     nickname = "nick",
-                    result = 25.0F,
+                    result = 25.0,
                     totalGamesPlayed = 3,
                 ),
                 LBItemUiModel(
                     ranking = 2,
                     nickname = "mike",
-                    result = 20.0F,
+                    result = 20.0,
                     totalGamesPlayed = 2,
                 ),
                 LBItemUiModel(
                     ranking = 3,
                     nickname = "nick",
-                    result = 19.0F,
+                    result = 19.0,
                     totalGamesPlayed = 3,
                 ),
                 LBItemUiModel(
                     ranking = 3,
                     nickname = "nick",
-                    result = 17.0F,
+                    result = 17.0,
                     totalGamesPlayed = 3,
                 ),
                 LBItemUiModel(
                     ranking = 5,
                     nickname = "mike",
-                    result = 10.0F,
+                    result = 10.0,
                     totalGamesPlayed = 2,
                 ),
             )

@@ -1,16 +1,21 @@
-package com.example.catapult.segments.user.register_screen
+package com.example.catapult.segments.user.profile_edit_screen
 
 import com.example.catapult.data.datastore.UserData
 
-interface RegisterContract {
+interface ProfileEditContract {
 
-    sealed class RegisterEvent {
-        data class Register(
+    data class ProfileEditState(
+        var fetchingData: Boolean = true,
+        val userData: UserData = UserData(),
+    )
+
+    sealed class ProfileEditEvent {
+        data class UpdateProfile(
             val firstName: String,
             val lastName: String,
             val nickname: String,
             val email: String
-        ) : RegisterEvent() {
+        ) : ProfileEditEvent() {
 
             fun asUserData() : UserData {
                 return UserData(
@@ -21,6 +26,5 @@ interface RegisterContract {
                 )
             }
         }
-
     }
 }

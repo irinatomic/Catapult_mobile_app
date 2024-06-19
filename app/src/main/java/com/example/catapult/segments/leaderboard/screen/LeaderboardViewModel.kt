@@ -8,11 +8,9 @@ import com.example.catapult.data.mapper.asLBItemUiModel
 import com.example.catapult.segments.leaderboard.LeaderboardRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.io.IOException
 
 @HiltViewModel
@@ -22,6 +20,7 @@ class LeaderboardViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(LeaderboardState())
     val state = _state.asStateFlow()
+
     private fun setState(reducer: LeaderboardState.() -> LeaderboardState) = _state.update(reducer)
 
     init {
@@ -43,9 +42,7 @@ class LeaderboardViewModel @Inject constructor(
         viewModelScope.launch {
             setState { copy(fetching = true) }
             try {
-                withContext(Dispatchers.IO) {
-                    repository.fetchLeaderboard()
-                }
+                repository.fetchLeaderboard()
             }  catch (error: IOException) {
                 setState { copy(error = LeaderboardState.ListError.ListUpdateFailed(cause = error)) }
             } finally {

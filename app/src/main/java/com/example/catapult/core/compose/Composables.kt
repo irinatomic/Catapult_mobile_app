@@ -1,23 +1,12 @@
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Star
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.SuggestionChip
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
@@ -29,7 +18,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.data.ui.BreedUiModel
 import com.example.catapult.R
-import kotlinx.coroutines.launch
+import androidx.compose.foundation.Canvas
 
 @Composable
 fun FetchingData() {
@@ -164,5 +153,30 @@ fun BreedsPreviewCardImage(
             modifier = Modifier.fillMaxSize(),
             loading = { CircularProgressIndicator() }
         )
+    }
+}
+
+@Composable
+fun CustomVerticalScrollbar(
+    modifier: Modifier = Modifier,
+    scrollState: androidx.compose.foundation.ScrollState
+) {
+    val scrollbarWidth = 4.dp
+    val scrollbarColor = Color.Gray
+    val thumbHeight = remember { 20.dp }
+
+    Box(modifier = modifier) {
+        Canvas(modifier = Modifier
+            .fillMaxHeight()
+            .width(scrollbarWidth)) {
+            val totalHeight = size.height
+            val proportion = scrollState.maxValue.toFloat() / totalHeight
+            val offset = (scrollState.value / proportion).coerceIn(0f, totalHeight - thumbHeight.toPx())
+            drawRect(
+                color = scrollbarColor,
+                size = androidx.compose.ui.geometry.Size(scrollbarWidth.toPx(), thumbHeight.toPx()),
+                topLeft = androidx.compose.ui.geometry.Offset(0f, offset)
+            )
+        }
     }
 }

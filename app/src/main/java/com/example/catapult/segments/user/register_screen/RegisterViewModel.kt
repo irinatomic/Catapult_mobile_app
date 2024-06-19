@@ -1,11 +1,9 @@
 package com.example.catapult.segments.user.register_screen
 
-import android.util.Log
-import com.example.catapult.data.datastore.UserStore
 import com.example.catapult.segments.user.register_screen.RegisterContract.*
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.catapult.data.datastore.UserData
+import com.example.catapult.segments.user.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.launch
@@ -13,7 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegisterViewModel @Inject constructor(
-    private val store: UserStore
+    private val repository: UserRepository,
 ): ViewModel() {
 
     private val events = MutableSharedFlow<RegisterEvent>()
@@ -33,22 +31,11 @@ class RegisterViewModel @Inject constructor(
         viewModelScope.launch {
             events.collect {
                 when(it) {
-                    is RegisterEvent.Register -> { registerUser(it) }
+                    is RegisterEvent.Register -> {
+                        repository.registerUser(it.asUserData())
+                    }
                 }
             }
         }
-    }
-
-    private suspend fun registerUser(event: RegisterEvent.Register) {
-        val userData = UserData(
-            firstName = event.firstName,
-            lastName = event.lastName,
-            nickname = event.nickname,
-            email = event.email
-        )
-        Log.d("IRINA", "Registering user: $userData")
-        store.setData(userData)
-
-        // TODO: navigation to /breeds screen
     }
 }

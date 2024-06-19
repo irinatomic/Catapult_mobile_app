@@ -28,11 +28,12 @@ class NavigationViewModel @Inject constructor (
     }
 
     private fun init() {
-        viewModelScope.launch{
-            withContext(Dispatchers.IO) {
-                val hasAccount = store.isUserRegistered()
-                setState { copy(hasAccount = hasAccount) }
-            }
+        viewModelScope.launch {
+            val hasAccount = withContext(Dispatchers.IO) { store.isUserRegistered() }
+            setState { copy(
+                hasAccount = hasAccount,
+                isLoading = false
+            ) }
         }
     }
 }

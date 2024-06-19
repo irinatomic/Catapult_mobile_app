@@ -19,6 +19,6 @@ data class SubmitResultResponse(
 data class LeaderboardApiModel(
     val category: Int = 0,
     val nickname: String = "",
-    val result: Float = 0.0f,
+    val result: Double = 0.0,
     val createdAt: Long = 0L        // timestamp
 )

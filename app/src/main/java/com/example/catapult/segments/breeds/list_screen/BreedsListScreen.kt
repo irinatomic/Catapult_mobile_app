@@ -1,36 +1,28 @@
 import android.util.Log
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.Text
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.compose.foundation.lazy.items
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.catapult.R
 import com.example.catapult.data.ui.BreedUiModel
 import com.example.catapult.navigation_drawer.AppDrawer
-import com.example.catapult.navigation_drawer.DrawerMenu
 import com.example.catapult.navigation_drawer.HamburgerMenu
 import com.example.catapult.segments.breeds.list_screen.*
-import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.breedsListScreen(
     route: String,
@@ -50,7 +42,6 @@ fun NavGraphBuilder.breedsListScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BreedsListScreen(
     state: BreedsListState,
@@ -68,7 +59,8 @@ fun BreedsListScreen(
             AppDrawer(
                 navController = navController,
                 drawerState = drawerState,
-                scope = scope)
+                scope = scope
+            )
         }
     ) {
         Scaffold (

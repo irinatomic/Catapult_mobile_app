@@ -50,9 +50,9 @@ class UserStore @Inject constructor(
         }
     }
 
-    suspend fun updateData(update: UserData.() -> UserData) {
+    suspend fun updateData(transform: (UserData) -> UserData) {
         try {
-            persistence.updateData { currentData -> update(currentData) }
+            persistence.updateData { currentData -> transform(currentData) }
         } catch (e: Exception) {
             Log.d("IRINA", "Error updating data: $e")
         }

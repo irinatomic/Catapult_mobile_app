@@ -11,14 +11,14 @@ sealed class DrawerItem(
     data object Discover : DrawerItem("breeds", "Discover",  R.drawable.ic_discover)
     data object StartQuiz : DrawerItem("quiz/start", "Start Quiz", R.drawable.ic_quiz)
     data object Leaderboard : DrawerItem("leaderboard", "Leaderboard", R.drawable.ic_leaderboard)
-
-   // object Account : DrawerItem("account", "My Account", R.drawable.ic_account)
+    data object Profile : DrawerItem("profile", "My Profile", R.drawable.ic_account)
 
     companion object {
         val allItems = listOf(
             Discover,
             StartQuiz,
-            Leaderboard
+            Leaderboard,
+            Profile
         )
     }
 }

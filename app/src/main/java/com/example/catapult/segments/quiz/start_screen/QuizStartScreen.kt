@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.Text
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -25,7 +27,6 @@ fun NavGraphBuilder.quizStartScreen(
 ) = composable(route = route) {
 
     QuizStartScreen(
-        onBack = { /* Do nothing here to disable the back action */ },
         onStartQuizClick = { navController.navigate("quiz") },
         navController = navController
     )
@@ -35,7 +36,6 @@ fun NavGraphBuilder.quizStartScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuizStartScreen (
-    onBack: () -> Unit,
     onStartQuizClick: () -> Unit,
     navController: NavController
 ) {
@@ -48,7 +48,8 @@ fun QuizStartScreen (
             AppDrawer(
                 navController = navController,
                 drawerState = drawerState,
-                scope = scope)
+                scope = scope
+            )
         }
     ) {
         Scaffold (
@@ -56,7 +57,7 @@ fun QuizStartScreen (
             topBar = {
                 TopAppBar(
                     title = { Text(stringResource(id = R.string.app_name)) },
-                    navigationIcon = { IconButton(onClick = onBack) { HamburgerMenu(drawerState) } },
+                    navigationIcon = { HamburgerMenu(drawerState) },
                 )
             },
 
