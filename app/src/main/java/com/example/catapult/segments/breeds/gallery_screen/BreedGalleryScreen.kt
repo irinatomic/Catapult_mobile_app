@@ -1,5 +1,6 @@
 package com.example.catapult.segments.breeds.gallery_screen
 
+import android.util.Log
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -11,6 +12,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -22,6 +24,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import coil.compose.SubcomposeAsyncImage
 import com.example.catapult.R
+import com.example.catapult.core.compose.LoadingScreen
 import com.example.catapult.data.ui.ImageUiModel
 import com.example.catapult.segments.breeds.gallery_screen.BreedGalleryContract.*
 
@@ -37,17 +40,32 @@ fun NavGraphBuilder.breedGalleryScreen(
 ) {backStackEntry ->
 
     val breedGalleryViewModel = hiltViewModel<BreedGalleryViewModel>(backStackEntry)
-    val state = breedGalleryViewModel.state.collectAsState()
+    val state  by breedGalleryViewModel.state.collectAsState()
 
     BreedGalleryScreen(
-        state = state.value,
+        state = state,
         onBack = onBack,
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun BreedGalleryScreen(
+    state: BreedGalleryState,
+    onBack: () -> Unit,
+) {
+    if(state.loading)
+        LoadingScreen()
+    else {
+        BreedGalleryScreenContent(
+            state = state,
+            onBack = onBack,
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@Composable
+fun BreedGalleryScreenContent(
     state: BreedGalleryState,
     onBack: () -> Unit,
 ) {
@@ -60,6 +78,9 @@ fun BreedGalleryScreen(
             pagerState.scrollToPage(state.currentIndex)
         }
     }
+
+    Log.d("IRINA", "state.CurrentIndex: ${state.currentIndex}")
+    Log.d("IRINA", "pageCount: ${pagerState.pageCount} currentIndex: ${pagerState.currentPage}")
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column {

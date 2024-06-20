@@ -1,17 +1,21 @@
 package com.example.catapult.segments.leaderboard.screen
 
-import android.annotation.SuppressLint
+import ScrollToTopButton
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.material3.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import com.example.catapult.segments.leaderboard.screen.LeaderboardContract.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,8 +30,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.catapult.R
+import com.example.catapult.core.compose.LoadingScreen
 import com.example.catapult.data.ui.LBItemUiModel
 import com.example.catapult.navigation_drawer.*
+import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.leaderboardScreen(
     route: String,
@@ -44,7 +50,6 @@ fun NavGraphBuilder.leaderboardScreen(
     )
 }
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LeaderboardScreen(
@@ -54,6 +59,10 @@ fun LeaderboardScreen(
 ) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
+    val showScrollToTop by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
+
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -79,22 +88,22 @@ fun LeaderboardScreen(
                 // CONTENT
                 Box(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp)) {
                     when {
-                        state.fetching -> {
-                            // Display a loading indicator while fetching data
-                            CircularProgressIndicator(Modifier.align(Alignment.Center))
-                        }
+                        state.fetching -> { LoadingScreen() }
                         state.error != null -> {
                             when (val error = state.error) {
                                 is LeaderboardState.ListError.ListUpdateFailed -> {
                                     Text(text = "Error: ${error.cause?.message}", Modifier.align(Alignment.Center))
                                 }
-                                else -> {
-                                    Log.d("IRINA", error.toString())
-                                }
+                                else -> { Log.d("IRINA", error.toString()) }
                             }
                         }
                         else -> {
-                            Leaderboard(leaderboardItems = state.leaderboardItems)
+                            Leaderboard(leaderboardItems = state.leaderboardItems, listState = listState)
+                            ScrollToTopButton(showButton = showScrollToTop) {
+                                scope.launch {
+                                    listState.animateScrollToItem(0)
+                                }
+                            }
                         }
                     }
                 }
@@ -106,16 +115,15 @@ fun LeaderboardScreen(
 
 @Composable
 fun Leaderboard(
-    leaderboardItems: List<LBItemUiModel>
+    leaderboardItems: List<LBItemUiModel>,
+    listState: LazyListState
 ) {
     Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(8.dp)
+        Modifier.fillMaxWidth().padding(8.dp)
     ) {
         LeaderboardHeader()
         Spacer(modifier = Modifier.height(8.dp))
-        LazyColumn {
+        LazyColumn (state = listState) {
             itemsIndexed(leaderboardItems) { index, item ->
                 LeaderboardCard(orderNumber = index, item = item)
             }
@@ -166,10 +174,14 @@ fun LeaderboardCard(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             val textStyle = MaterialTheme.typography.bodyMedium
-            Text(text = (orderNumber + 1).toString(), style = textStyle, modifier = Modifier.padding(start = 12.dp).width(50.dp))
+            Text(text = (orderNumber + 1).toString(), style = textStyle, modifier = Modifier
+                .padding(start = 12.dp)
+                .width(50.dp))
             Text(text = item.nickname, style = textStyle, modifier = Modifier.width(130.dp))
             Text(text = String.format("%.2f", item.result), style = textStyle, modifier = Modifier.width(70.dp))
-            Text(text = item.totalGamesPlayed.toString(), style = textStyle, modifier = Modifier.padding(end = 12.dp).width(70.dp))
+            Text(text = item.totalGamesPlayed.toString(), style = textStyle, modifier = Modifier
+                .padding(end = 12.dp)
+                .width(70.dp))
         }
     }
 }

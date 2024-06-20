@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -34,14 +35,14 @@ fun NavGraphBuilder.breedImagesScreen(
     val breedId = backStackEntry.arguments?.getString("breedId") ?: ""
 
     val breedImagesViewModel = hiltViewModel<BreedImagesViewModel>(backStackEntry)
-    val state = breedImagesViewModel.state.collectAsState()
+    val state by breedImagesViewModel.state.collectAsState()
 
     val onImageClick: (String) -> Unit = { imageId ->
         navController.navigate("breed/images/${breedId}?currentImage=$imageId")
     }
 
     BreedImagesScreen(
-        state = state.value,
+        state = state,
         onImageClick = onImageClick,
         onBack = onBack
     )

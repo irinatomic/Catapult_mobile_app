@@ -5,7 +5,7 @@ import com.example.catapult.data.ui.ImageUiModel
 interface BreedGalleryContract {
 
     data class BreedGalleryState(
-        val loading: Boolean = false,
+        val loading: Boolean = true,
         val images: List<ImageUiModel> = emptyList(),
         val currentIndex: Int = 0,
     )

@@ -1,6 +1,7 @@
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Close
@@ -13,6 +14,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,6 +25,7 @@ import com.example.catapult.data.ui.BreedUiModel
 import com.example.catapult.navigation_drawer.AppDrawer
 import com.example.catapult.navigation_drawer.HamburgerMenu
 import com.example.catapult.segments.breeds.list_screen.*
+import kotlinx.coroutines.launch
 
 fun NavGraphBuilder.breedsListScreen(
     route: String,
@@ -50,9 +53,11 @@ fun BreedsListScreen(
     onItemClick: (BreedUiModel) -> Unit,
     navController: NavController
 ) {
-
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
+    val showScrollToTop by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 } }
 
     ModalNavigationDrawer(
         drawerState = drawerState,
@@ -80,31 +85,39 @@ fun BreedsListScreen(
                 }
 
                 // CONTENT
-                if (state.searchActive) {
-                    SearchMode(
-                        state = state,
-                        eventPublisher = eventPublisher,
-                        onItemClick = onItemClick
-                    )
-                } else {
-                    BreedsList(
-                        items = state.breeds,
-                        paddingValues = PaddingValues(), // Adjust as necessary
-                        onItemClick = onItemClick,
-                    )
+                Box(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 0.dp)) {
+                    if (state.searchActive) {
+                        SearchMode(
+                            state = state,
+                            eventPublisher = eventPublisher,
+                            onItemClick = onItemClick,
+                            listState = listState
+                        )
+                    } else {
+                        BreedsList(
+                            items = state.breeds,
+                            onItemClick = onItemClick,
+                            listState = listState
+                        )
+                    }
 
-                    if (state.breeds.isEmpty()) {
-                        when {
-                            state.fetching -> LoadingScreen()
-                            state.error is BreedsListState.ListError.ListUpdateFailed ->
-                                ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
-                            else -> NoDataScreen()
+                    ScrollToTopButton(showButton = showScrollToTop) {
+                        scope.launch {
+                            listState.animateScrollToItem(0)
                         }
+                    }
+                }
+
+                if (state.breeds.isEmpty()) {
+                    when {
+                        state.fetching -> LoadingScreen()
+                        state.error is BreedsListState.ListError.ListUpdateFailed ->
+                            ErrorData(errorMessage = state.error.cause?.message ?: stringResource(id = R.string.error_fetching_data))
+                        else -> NoDataScreen()
                     }
                 }
             }
         }
-
     }
 }
 
@@ -113,8 +126,8 @@ private fun SearchMode(
     state: BreedsListState,
     eventPublisher: (BreedsListUIEvent) -> Unit,
     onItemClick: (BreedUiModel) -> Unit,
+    listState: LazyListState
 ) {
-
     Column {
         Spacer(modifier = Modifier.height(16.dp))
         SearchBar(state.searchQuery, eventPublisher)
@@ -122,9 +135,30 @@ private fun SearchMode(
         Text(text = "${stringResource(id = R.string.number_of_results)}: ${state.filteredBreeds.size}")
         BreedsList(
             items = state.filteredBreeds,
-            paddingValues = PaddingValues(),
             onItemClick = onItemClick,
+            listState = listState
         )
+    }
+}
+
+@Composable
+private fun BreedsList (
+    items: List<BreedUiModel>,
+    onItemClick: (BreedUiModel) -> Unit,
+    listState: LazyListState
+) {
+    LazyColumn (
+        modifier = Modifier.fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Top,
+        state = listState
+    ) {
+        items(items, key = { item -> item.id }) { item ->
+            BreedsPreviewCard(
+                breed = item,
+                onClick = { onItemClick(item) },
+            )
+        }
     }
 }
 
@@ -159,28 +193,6 @@ private fun SearchBar(
             eventPublisher(BreedsListUIEvent.DeleteSearch)
         }) {
             Icon(Icons.Filled.Close, contentDescription = stringResource(id = R.string.clear))
-        }
-    }
-}
-
-@Composable
-private fun BreedsList (
-    items: List<BreedUiModel>,
-    paddingValues: PaddingValues,
-    onItemClick: (BreedUiModel) -> Unit,
-) {
-    LazyColumn (
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(paddingValues),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Top,
-    ) {
-        items(items, key = { item -> item.id }) { item ->
-            BreedsPreviewCard(
-                breed = item,
-                onClick = { onItemClick(item) },
-            )
         }
     }
 }

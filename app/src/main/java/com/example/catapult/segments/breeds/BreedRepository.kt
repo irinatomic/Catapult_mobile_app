@@ -32,7 +32,7 @@ class BreedRepository @Inject constructor(
 
     /** Returns Flow which holds all breeds. */
     fun observeBreeds(): Flow<List<BreedDbModel>> {
-        return database.breedDao().observeAll();
+        return database.breedDao().observeAll()
     }
 
     /** Returns Flow with BreedDbModel with given breedId. */
@@ -40,7 +40,7 @@ class BreedRepository @Inject constructor(
         return database.breedDao().observeBreedById(breedId)
     }
 
-    // API request -> save to db
+    /** Fetches images for breed and saves them to the database. */
     suspend fun fetchImagesForBreed(breedId: String) {
         // Check if there are any images for the breed in the database
         val imageCount = database.imageDao().countImagesForBreed(breedId)
@@ -54,5 +54,10 @@ class BreedRepository @Inject constructor(
     /** Returns Flow with ImageDbModel for given breedId. */
     fun observeImagesForBreed(breedId: String): Flow<List<ImageDbModel>> {
         return database.imageDao().observeAllForBreed(breedId)
+    }
+
+    /** Returns all images for given breedId. */
+    suspend fun getImagesForBreed(breedId: String): List<ImageDbModel> {
+        return database.imageDao().getAllForBreed(breedId)
     }
 }

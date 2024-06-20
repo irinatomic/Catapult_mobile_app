@@ -1,12 +1,13 @@
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -53,7 +54,7 @@ fun BreedsPreviewCard(
 ) {
     ElevatedCard(
         modifier = Modifier
-            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .padding(vertical = 8.dp)
             .fillMaxWidth()
             .height(200.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 6.dp),
@@ -131,5 +132,24 @@ fun BreedsPreviewCardImage(
             modifier = Modifier.fillMaxSize(),
             loading = { CircularProgressIndicator() }
         )
+    }
+}
+
+@Composable
+fun ScrollToTopButton(
+    showButton: Boolean,
+    onClick: () -> Unit
+) {
+    if (showButton) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.BottomEnd
+        ) {
+            FloatingActionButton(
+                modifier = Modifier.padding(bottom = 32.dp),
+                onClick = onClick,
+                content = { Icon(Icons.Default.KeyboardArrowUp, contentDescription = "Scroll to top") }
+            )
+        }
     }
 }
