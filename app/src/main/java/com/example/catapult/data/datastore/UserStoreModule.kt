@@ -11,11 +11,14 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
+// SingletonComponent is a Dagger component that is tied to the Application lifecycle
+// and will be created only once during the Application lifecycle.
+
 @Module
 @InstallIn(SingletonComponent::class)
 object UserStoreModule {
 
-    @Provides
+    @Provides           // tells Dagger how to provide instances of a type
     @Singleton
     fun provideAuthDataStore(@ApplicationContext context: Context): DataStore<UserData> =
         DataStoreFactory.create(

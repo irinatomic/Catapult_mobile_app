@@ -40,7 +40,7 @@ class ProfileEditViewModel @Inject constructor(
                 when(it) {
                     is ProfileEditEvent.UpdateProfile -> {
                         repository.updateUser(it.asUserData())
-                        Log.d("IRINA", "updateProfileInfo event")
+                        Log.d("CATAPULT", "updateProfileInfo event")
                     }
                 }
             }

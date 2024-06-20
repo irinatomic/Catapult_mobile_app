@@ -182,7 +182,7 @@ private fun SearchBar(
             onValueChange = { newValue ->
                 searchText = newValue
                 eventPublisher(BreedsListUIEvent.FilterSearch(newValue))
-                Log.d("IRINA", "FilterSearch event sent: $newValue")
+                Log.d("CATAPULT", "FilterSearch event sent: $newValue")
             },
             modifier = Modifier.weight(1f),
             placeholder = { Text(stringResource(id = R.string.search)) }

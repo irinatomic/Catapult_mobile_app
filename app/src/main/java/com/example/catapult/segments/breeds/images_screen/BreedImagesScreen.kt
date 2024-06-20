@@ -80,7 +80,7 @@ fun BreedImagesScreen(
                         .fillMaxSize()
                         .padding(horizontal = 4.dp),
                     columns = StaggeredGridCells.Fixed(2),
-                    contentPadding = PaddingValues(), // Adjust as necessary
+                    contentPadding = PaddingValues(),
                     horizontalArrangement = Arrangement.spacedBy(4.dp),
                 ) {
                     itemsIndexed(

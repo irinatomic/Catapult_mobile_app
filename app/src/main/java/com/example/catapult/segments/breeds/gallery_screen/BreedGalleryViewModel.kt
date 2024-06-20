@@ -48,7 +48,7 @@ class BreedGalleryViewModel @Inject constructor (
                 ) }
 
             } catch (error: Exception) {
-                Log.e("IRINA", "Failed to fetch images for breed $breedId, error: ${error.message}")
+                Log.e("CATAPULT", "Failed to fetch images for breed $breedId, error: ${error.message}")
             }
 
             setState { copy(loading = false) }

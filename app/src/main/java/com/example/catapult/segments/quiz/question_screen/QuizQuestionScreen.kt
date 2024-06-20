@@ -117,7 +117,10 @@ fun ShowQuestionScreen(
 
     if (showCancelDialog) {
         ConfirmCancelQuizDialog(
-            onConfirm = { cancelQuiz() },
+            onConfirm = {
+                showCancelDialog = false
+                cancelQuiz()
+            },
             onDismiss = { showCancelDialog = false }
         )
     }
@@ -411,9 +414,9 @@ fun QuizFinishedScreen(
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(modifier = Modifier.fillMaxHeight(0.1F))
+            Spacer(modifier = Modifier.fillMaxHeight(0.2F))
 
             Text(
                 text = "Quiz Finished!",

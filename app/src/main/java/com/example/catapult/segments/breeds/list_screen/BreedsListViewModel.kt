@@ -47,7 +47,7 @@ class BreedsListViewModel @Inject constructor(
                     is BreedsListUIEvent.StartSearch -> setState { copy(searchActive = true, filteredBreeds = state.value.breeds) }
                     is BreedsListUIEvent.StopSearch -> setState { copy(searchActive = false, filteredBreeds = emptyList()) }
                     is BreedsListUIEvent.FilterSearch -> {
-                        Log.d("IRINA", "FilterSearch event received")
+                        Log.d("CATAPULT", "FilterSearch event received")
                         setState  { copy(filteredBreeds = emptyList()) }
                         val filteredBreeds = state.value.breeds.filter { breed -> breed.name.contains(it.query, ignoreCase = true) }
                         setState { copy(filteredBreeds = filteredBreeds) }
@@ -57,7 +57,7 @@ class BreedsListViewModel @Inject constructor(
                         setState{ copy(searchQuery = "") }
                         setState{ copy(filteredBreeds = state.value.breeds) }
                     } else -> {
-                        Log.d("IRINA", "Event not recognized")
+                        Log.d("CATAPULT", "Event not recognized")
                     }
                 }
             }
@@ -104,7 +104,7 @@ class BreedsListViewModel @Inject constructor(
                 setState { copy(fetching = false) }
             }
         }
-        Log.i(" IRINA", "Breeds table updated.")
+        Log.i(" CATAPULT", "Breeds table updated.")
     }
 
 }

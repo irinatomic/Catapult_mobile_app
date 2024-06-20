@@ -93,7 +93,7 @@ class QuizQuestionViewModel @Inject constructor (
      */
     private fun createQuestions() {
         viewModelScope.launch {
-            Log.d("IRINA", "Creating questions...")
+            Log.d("CATAPULT", "Creating questions...")
 
             withContext(Dispatchers.IO) {
                 setState { copy(creatingQuestions = true) }
@@ -102,7 +102,7 @@ class QuizQuestionViewModel @Inject constructor (
                 quizRepository.fetchImagesForBreed(questions[1])
                 setState { copy(questions = questions, creatingQuestions = false) }
 
-                Log.d("IRINA", "Questions created $questions")
+                Log.d("CATAPULT", "Questions created $questions")
             }
 
             timer.start()

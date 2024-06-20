@@ -74,7 +74,7 @@ fun BreedDetailsScreen (
                 onMoreImagesClick = onMoreImagesClick
             )
 
-            Log.d("IRINA", "BreedDetailsScreen: ${state.breedId}")
+            Log.d("CATAPULT", "BreedDetailsScreen: ${state.breedId}")
 
             if (state.breedUi == null) {
                 when {

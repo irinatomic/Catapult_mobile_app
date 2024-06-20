@@ -38,12 +38,12 @@ class BreedDetailsViewModel @Inject constructor (
 
     /** Observer breed details data from our local data and updates the state */
     private fun observeBreedDetails() {
-        Log.d("IRINA", "observeBreedDetails: start")
+        Log.d("CATAPULT", "observeBreedDetails: start")
         viewModelScope.launch {
             repository.observeBreedDetails(breedId = breedId)
                 .filterNotNull()
                 .collect {
-                    Log.d("IRINA", "observeBreedDetails: $it")
+                    Log.d("CATAPULT", "observeBreedDetails: $it")
                     setState { copy(breedUi = it.asBreedUiModel()) }
                }
         }
@@ -53,14 +53,14 @@ class BreedDetailsViewModel @Inject constructor (
         viewModelScope.launch(Dispatchers.IO) {
             // Observe the images for the breed from the database
             val initialImages = repository.observeImagesForBreed(breedId).first()
-            Log.d("IRINA", "Initial images: $initialImages")
+            Log.d("CATAPULT", "Initial images: $initialImages")
 
             // Fetch new images from the API
             repository.fetchImagesForBreed(breedId)
 
             // Observe the images again to see the updated values
             val updatedImages = repository.observeImagesForBreed(breedId).first()
-            Log.d("IRINA", "Updated images: $updatedImages")
+            Log.d("CATAPULT", "Updated images: $updatedImages")
         }
     }
 

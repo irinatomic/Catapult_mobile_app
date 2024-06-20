@@ -94,7 +94,7 @@ fun LeaderboardScreen(
                                 is LeaderboardState.ListError.ListUpdateFailed -> {
                                     Text(text = "Error: ${error.cause?.message}", Modifier.align(Alignment.Center))
                                 }
-                                else -> { Log.d("IRINA", error.toString()) }
+                                else -> { Log.d("CATAPULT", error.toString()) }
                             }
                         }
                         else -> {

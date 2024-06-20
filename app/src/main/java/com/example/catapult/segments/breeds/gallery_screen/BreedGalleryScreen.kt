@@ -79,8 +79,8 @@ fun BreedGalleryScreenContent(
         }
     }
 
-    Log.d("IRINA", "state.CurrentIndex: ${state.currentIndex}")
-    Log.d("IRINA", "pageCount: ${pagerState.pageCount} currentIndex: ${pagerState.currentPage}")
+    Log.d("CATAPULT", "state.CurrentIndex: ${state.currentIndex}")
+    Log.d("CATAPULT", "pageCount: ${pagerState.pageCount} currentIndex: ${pagerState.currentPage}")
 
     Surface(modifier = Modifier.fillMaxSize()) {
         Column {

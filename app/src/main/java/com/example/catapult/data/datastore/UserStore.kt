@@ -46,7 +46,7 @@ class UserStore @Inject constructor(
         try {
             persistence.updateData { data }
         } catch (e: Exception) {
-            Log.d("IRINA", "Error setting data: $e")
+            Log.d("CATAPULT", "Error setting data: $e")
         }
     }
 
@@ -54,7 +54,7 @@ class UserStore @Inject constructor(
         try {
             persistence.updateData { currentData -> transform(currentData) }
         } catch (e: Exception) {
-            Log.d("IRINA", "Error updating data: $e")
+            Log.d("CATAPULT", "Error updating data: $e")
         }
     }
 
@@ -62,7 +62,7 @@ class UserStore @Inject constructor(
         try {
             persistence.updateData { UserData() }        // update data with default values
         } catch (e: Exception) {
-            Log.d("IRINA", "Error deleting data: $e")
+            Log.d("CATAPULT", "Error deleting data: $e")
         }
     }
 }

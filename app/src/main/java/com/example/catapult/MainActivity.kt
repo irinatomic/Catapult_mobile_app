@@ -17,9 +17,9 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             CatapultTheme {
-
                 AppNavigation()
             }
         }
+
     }
 }

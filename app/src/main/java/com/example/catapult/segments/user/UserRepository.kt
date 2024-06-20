@@ -25,12 +25,12 @@ class UserRepository @Inject constructor(
     }
 
     suspend fun registerUser(userData: UserData) {
-        Log.d("IRINA", "User repository - registering user: $userData")
+        Log.d("CATAPULT", "User repository - registering user: $userData")
         store.setData(userData)
     }
 
     suspend fun updateUser(userData: UserData) {
-        Log.d("IRINA", "User repository - updating user: $userData")
+        Log.d("CATAPULT", "User repository - updating user: $userData")
         store.updateData { userData }
     }
 }

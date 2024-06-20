@@ -66,7 +66,7 @@ class BreedImagesViewModel @Inject constructor (
                 setState { copy(fetching = false) }
             }
         }
-        Log.i(" IRINA", "Images table updated.")
+        Log.i(" CATAPULT", "Images table updated.")
     }
 
 }
