@@ -90,7 +90,7 @@ fun ProfileScreen(
                                     onClick = onEditClick,
                                     modifier = Modifier.padding(top = 16.dp),
                                     colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
-                                ) { Text(text = "Edit Profile") }
+                                ) { Text(text = "Edit Profile", color = Color.White) }
                             }
                         }
                     }

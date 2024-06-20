@@ -11,6 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -123,7 +124,7 @@ private fun BreedDetails(
                     onClick = onMoreImagesClick,
                     modifier = Modifier.padding(8.dp),
                     colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
-                ) { Text(text = "More images") }
+                ) { Text(text = "More images", color = Color.White) }
             }
 
             Text(
@@ -268,5 +269,5 @@ private fun WikipediaButton(
         },
         modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
         colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
-    ) { Text(stringResource(id = R.string.wikipedia)) }
+    ) { Text(text = stringResource(id = R.string.wikipedia), color = Color.White) }
 }

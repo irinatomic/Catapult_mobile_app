@@ -51,7 +51,6 @@ fun AppDrawer(
 
     Surface(
         modifier = Modifier.fillMaxHeight().width(240.dp),
-        color = MaterialTheme.colors.surface
     ) {
         Column(modifier = Modifier.statusBarsPadding()) {
             Text(

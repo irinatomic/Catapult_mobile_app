@@ -2,7 +2,7 @@ package com.example.catapult.core.compose
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,16 +66,16 @@ fun UserForm(
                 label = "Email",
                 regex = Regex("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}")
             )
-        }
 
-        Button(
-            onClick = onClick,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-                .align(Alignment.CenterHorizontally),
-            colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
-        ) { Text(text = buttonText) }
+            Button(
+                onClick = onClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+                    .align(Alignment.End),
+                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+            ) { Text(text = buttonText, color = Color.White) }
+        }
     }
 
 }
@@ -93,7 +93,7 @@ fun LineTextField(
     Column {
         Text(text = label, style = TextStyle(
             fontSize = 16.sp,
-            color = if (isError) Color.Red else MaterialTheme.colors.surface)
+            color = if (isError) Color.Red else MaterialTheme.colorScheme.onSurface)
         )
 
         Spacer(modifier = Modifier.height(4.dp))
@@ -104,7 +104,10 @@ fun LineTextField(
                 onValueChange(it)
                 isError = !regex.matches(it.text)
             },
-            textStyle = TextStyle(fontSize = 18.sp, color = if (isError) Color.Red else Color.Black),
+            textStyle = TextStyle(
+                fontSize = 18.sp,
+                color = if (isError) Color.Red else MaterialTheme.colorScheme.onSurface
+            ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp)

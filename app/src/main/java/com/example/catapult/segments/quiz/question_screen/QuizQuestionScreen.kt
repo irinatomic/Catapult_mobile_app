@@ -2,6 +2,7 @@ package com.example.catapult.segments.quiz.question_screen
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.*
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.Icon
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.SubcomposeAsyncImage
+import kotlinx.coroutines.delay
 
 fun NavGraphBuilder.quizQuestionScreen(
     route: String,
@@ -44,7 +46,9 @@ fun NavGraphBuilder.quizQuestionScreen(
 
     QuizQuestionScreen(
         state = state,
-        onNextQuestion = { answer -> quizQuestionViewModel.setEvent(QuizQuestionEvent.NextQuestion(answer)) },
+        onNextQuestion = {
+            answer -> quizQuestionViewModel.setEvent(QuizQuestionEvent.NextQuestion(answer))
+        },
         publishResult = {
             score -> quizQuestionViewModel.setEvent(QuizQuestionEvent.SubmitResult(score))
             navController.navigate("leaderboard")
@@ -98,6 +102,19 @@ fun ShowQuestionScreen(
     var answer by rememberSaveable { mutableStateOf("") }
     var showCancelDialog by remember { mutableStateOf(false) }
 
+    // for animation
+    var isQuestionVisible by remember { mutableStateOf(false) }
+
+    if(state.showCorrectAnswer) {
+        isQuestionVisible = true
+    }
+
+    LaunchedEffect(key1 = question) {
+        isQuestionVisible = false
+        delay(700)          // small delay to allow exit animation
+        isQuestionVisible = true
+    }
+
     if (showCancelDialog) {
         ConfirmCancelQuizDialog(
             onConfirm = { cancelQuiz() },
@@ -109,7 +126,9 @@ fun ShowQuestionScreen(
         modifier = Modifier.fillMaxSize(),
     ) {
         Column(
-            modifier = Modifier.statusBarsPadding().padding(start = 16.dp, end = 16.dp)
+            modifier = Modifier
+                .statusBarsPadding()
+                .padding(start = 16.dp, end = 16.dp)
         ) {
             QuizSessionInfo(state = state)
 
@@ -120,34 +139,25 @@ fun ShowQuestionScreen(
 
             Spacer(modifier = Modifier.fillMaxHeight(0.08F))
 
-            BoxWithConstraints(
-                modifier = Modifier
-                    .size(250.dp)
-                    .align(Alignment.CenterHorizontally)
-            ) {
-                SubcomposeAsyncImage(
-                    model = question.breedImageUrl,
-                    loading = { Text("Loading...") },
-                    error = { Text("Image loading failed") },
-                    contentDescription = "Breed Image",
-                    modifier = Modifier.fillMaxSize(),
+            Column (modifier = Modifier.height(450.dp)){
+                AnimatedVisibility(
+                    visible = isQuestionVisible,
+                    enter = slideInHorizontally(initialOffsetX = { fullWidth -> fullWidth }) + fadeIn(
+                        animationSpec = tween(durationMillis = 300)
+                    ),
+                    exit = slideOutHorizontally(targetOffsetX = { fullWidth -> -fullWidth }) + fadeOut(
+                        animationSpec = tween(durationMillis = 300)
+                    )
                 )
+                {
+                    QuestionContent(
+                        question = question,
+                        answer = answer,
+                        showCorrectAnswer = showCorrectAnswer,
+                        onAnswerSelected = { selected -> answer = selected }
+                    )
+                }
             }
-
-            Text(
-                text = question.text, fontSize = 18.sp, modifier = Modifier
-                    .padding(top = 10.dp)
-                    .align(Alignment.CenterHorizontally)
-            )
-
-            Spacer(modifier = Modifier.fillMaxHeight(0.05F))
-
-            ShowOfferedAnswers(
-                question = question,
-                selectedAnswer = answer,
-                onAnswerSelected = { selected -> answer = selected },
-                showCorrectAnswer = showCorrectAnswer
-            )
 
             Spacer(modifier = Modifier.fillMaxHeight(0.16F))
 
@@ -159,7 +169,7 @@ fun ShowQuestionScreen(
                 enabled = answer.isNotEmpty(),
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
-            ) { Text("Next Question") }
+            ) { Text(text = "Next Question", color = Color.White) }
 
             Spacer(modifier = Modifier.fillMaxHeight(0.08F))
 
@@ -167,8 +177,44 @@ fun ShowQuestionScreen(
                 onClick = { showCancelDialog = true },
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 colors = ButtonDefaults.buttonColors(MaterialTheme.colors.primary)
-            ) { Text("Cancel Quiz") }
+            ) { Text(text = "Cancel Quiz", color = Color.White) }
+
         }
+    }
+}
+
+@Composable
+fun QuestionContent(
+    question: Question,
+    answer: String,
+    showCorrectAnswer: Boolean,
+    onAnswerSelected: (String) -> Unit
+) {
+    Column {
+
+        Box(modifier = Modifier.size(250.dp).align(Alignment.CenterHorizontally)) {
+            SubcomposeAsyncImage(
+                model = question.breedImageUrl,
+                contentDescription = null,
+                modifier = Modifier.fillMaxSize(),
+                loading = { CircularProgressIndicator() }
+            )
+        }
+
+        Text(
+            text = question.text,
+            fontSize = 18.sp,
+            modifier = Modifier.padding(top = 10.dp).align(Alignment.CenterHorizontally)
+        )
+
+        Spacer(modifier = Modifier.fillMaxHeight(0.05F))
+
+        ShowOfferedAnswers(
+            question = question,
+            selectedAnswer = answer,
+            onAnswerSelected = onAnswerSelected,
+            showCorrectAnswer = showCorrectAnswer
+        )
     }
 }
 
@@ -182,12 +228,12 @@ fun ConfirmCancelQuizDialog(
         title = { Text("Are you sure you want to give up?") },
         confirmButton = {
             Button(onClick = onConfirm) {
-                Text("Yes")
+                Text("Yes", color = Color.White)
             }
         },
         dismissButton = {
             Button(onClick = onDismiss) {
-                Text("Cancel")
+                Text("No", color = Color.White)
             }
         }
     )
@@ -205,7 +251,9 @@ fun ShowOfferedAnswers(
     Column {
         question.answers.chunked(2).forEach { rowAnswers ->
             Row(
-                modifier = Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp, end = 8.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
                 rowAnswers.forEach { ans ->
@@ -229,7 +277,9 @@ fun ShowOfferedAnswers(
                     ) {
                         Text(
                             text = ans,
-                            modifier = Modifier.padding(16.dp).fillMaxWidth(),
+                            modifier = Modifier
+                                .padding(16.dp)
+                                .fillMaxWidth(),
                             color = MaterialTheme.colors.onSurface,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -253,20 +303,20 @@ fun QuizSessionInfo(
     ) {
         Text(
             buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
                     append("Question: ")
                 }
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
                     append("${state.currentQuestionIndex} of ${state.questions.size}")
                 }
             }
         )
         Text(
             buildAnnotatedString {
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.primary, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                withStyle(style = SpanStyle( fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
                     append("Correct answers: ")
                 }
-                withStyle(style = SpanStyle(color = MaterialTheme.colors.onSurface, fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
+                withStyle(style = SpanStyle(fontWeight = FontWeight.Bold, fontSize = 16.sp)) {
                     append("${state.correctAnswers}")
                 }
             }
@@ -306,7 +356,6 @@ fun CountdownTimer(
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = String.format("%02d:%02d", animatedTimeLeft.value.toInt() / 60, animatedTimeLeft.value.toInt() % 60),
-            color = MaterialTheme.colors.onSurface,
             fontWeight = FontWeight.Bold,
             fontSize = 20.sp
         )
@@ -391,14 +440,18 @@ fun QuizFinishedScreen(
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(bottom = 16.dp)
             ) {
-                Button(onClick = { publishResult(state.score) }) { Text("Publish Result") }
-                Button(onClick = { restartQuiz() }) { Text("Restart Quiz") }
+                Button(onClick = { publishResult(state.score) }) {
+                    Text(text = "Publish Result", color = Color.White)
+                }
+                Button(onClick = { restartQuiz() }) {
+                    Text(text = "Restart Quiz", color = Color.White)
+                }
             }
 
             Button(
                 onClick = { discoverPage() },
                 modifier = Modifier.padding(bottom = 16.dp)
-            ) { Text("Discover More Breeds") }
+            ) { Text(text = "Discover More Breeds", color = Color.White) }
         }
     }
 }
