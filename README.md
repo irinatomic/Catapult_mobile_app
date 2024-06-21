@@ -29,14 +29,14 @@ Catapult consists of 4 main [segments](app/src/main/java/com/example/catapult/se
 ## Technical Requirements
 1. **Model-View-Intent (MVI)** pattern for architecture
 2. **Kotlin Coroutines** for asynchronous programming
-3. **Jetpack Compose** for user interface
-4. **Jetpack Room** for database
-5. **Jetpack DataStore** for user profile
+3. **Jetpack Compose** for the user interface
+4. **Jetpack Room** for the database
+5. **Jetpack DataStore** for storing the local user profile
 6. **Hilt Dependency Injection** for dependency management
 
 ## Visual Requirements
 1. **Light and Dark Theme** utilizing [Material Design 3](https://m3.material.io/components) from Jetpack Compose
-2. **App Drawer Navigation** for navigation the app
+2. **App Drawer Navigation** for navigating the app
 3. **Animations** for the transition between quiz questions
 
 ## Database
@@ -45,7 +45,7 @@ Local SQLite database using Jetpack Room. All the information is kept in the dat
 <img src="docs/database.png" height="400px" />
 
 ## APIs
-TODO
+Two APIs were used: [The Cat Api](docs/api/cat_api.md) and [Leaderboard Api](docs/api/leaderboard_api.md).
 
 ## Screenshots
 <p float="left">
